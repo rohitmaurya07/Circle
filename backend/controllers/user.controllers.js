@@ -1,5 +1,6 @@
 import User from "../models/user.model"
 import bcrypt from "bcryptjs"
+import jwt from "jsonwebtoken"
 
 export const registerUser = async(req,res)=>{
     const {username, email, password} = req.body
@@ -20,14 +21,24 @@ export const registerUser = async(req,res)=>{
             password : hashedPassword
         })
         const user = await userdata.save() 
+
+        const token = jwt.sign({_id: user._id},process.env.JWT_SECRET,{expiresIn: '5y'})
+
         const {password: pass,...rest} = user._doc;
-        
-        res.status(201).json({
+
+        const options = {
+            httpOnly: true,
+            maxAge: 5 * 365 * 24 * 60 * 60 * 1000,
+            secure: false,
+            sameSite: "Strict"
+        }
+
+        res.status(201).cookie("token",token,options).json({
             success:true,
             message: "User Registered Successfully",
             user: rest,
         })
     } catch (error) {
-        console.log(error)
+        res.status(500).json({success: false,message: "Error with Registration!"})
     }
 }
