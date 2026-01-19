@@ -42,3 +42,39 @@ export const registerUser = async(req,res)=>{
         res.status(500).json({success: false,message: "Error with Registration!"})
     }
 }
+export const loginUser = async(req,res)=>{
+    const {email, password} = req.body
+
+    try {
+        if (!email || !password) {
+            return res.status(422).json({message: "All Fields are Required"})
+        }
+        const findUser = await User.findOne({email});
+        if (!findUser) {
+            return res.status(422).json({message: "Invalid Credentials"})
+        }
+        const isMatchedPassword = await bcrypt.compareSync(password,findUser.password)
+ if (!isMatchedPassword) {
+            return res.status(422).json({message: "Invalid Credentials"})
+        }
+        
+        const token = jwt.sign({_id: user._id},process.env.JWT_SECRET,{expiresIn: '5y'})
+
+        const {password: pass,...rest} = user._doc;
+
+        const options = {
+            httpOnly: true,
+            maxAge: 5 * 365 * 24 * 60 * 60 * 1000,
+            secure: false,
+            sameSite: "Strict"
+        }
+
+        res.status(201).cookie("token",token,options).json({
+            success:true,
+            message: "Login Successfully",
+            user: rest,
+        })
+    } catch (error) {
+        res.status(500).json({success: false,message: "Error with Login!"})
+    }
+}
