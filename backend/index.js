@@ -1,6 +1,24 @@
 import express from "express"
+import cors from "cors"
+import dotenv from "dotenv"
+import "dotenv/config"
+import bodyParser from "body-parser"
+import cookieParser from "cookie-parser"
+import userRouter from "./routes/user.routes.js"
 const app = express()
-const PORT = 4000 
+const PORT = process.env.PORT || 4000 
+
+// Middlewares
+app.use(cors())
+app.use(bodyParser.urlencoded({extended: false}))
+app.use(bodyParser.json())
+app.use(express.json())
+app.use(cookieParser)
+
+
+// Routers
+app.use('/api/v1/user',userRouter)
+
 
 app.get("/",(req,res)=>{
     res.send("Hello World")

@@ -96,3 +96,25 @@ export const logoutUser = async(req,res)=>{
         })
     }
 }
+
+export const profileUser = async(req,res)=>{
+    const user = req.user
+    res.status(200).json({
+        success: true,
+        user
+    })
+}
+export const allUsers = async(req,res)=>{
+    try {
+        const users = await User.find()
+        res.status(200).json({
+        success: true,
+        users
+    })
+    } catch (error) {
+            return res.status(500).json({
+            success: false,
+            message: "Something Wrong with users"
+        })
+    }
+}
