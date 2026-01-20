@@ -78,3 +78,21 @@ export const loginUser = async(req,res)=>{
         res.status(500).json({success: false,message: "Error with Login!"})
     }
 }
+
+export const logoutUser = async(req,res)=>{
+    try {
+        const options = {
+            httpOnly: true,
+            secure: true
+        }
+        res.status(200).clearCookie("token",options).json({
+            message: "Logout SuccessFully",
+            success: true
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Something Wrong with Logout"
+        })
+    }
+}
