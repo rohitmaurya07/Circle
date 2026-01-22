@@ -104,6 +104,34 @@ export const profileUser = async(req,res)=>{
         user
     })
 }
+export const uploadProfile = async(req,res)=>{
+    const userId = req.user._id
+   try {
+     const profileImage = req.file?.path;
+     if (!profileImage) {
+         return res.status(400).json({
+         success: false,
+         message: "No File Uploaded"
+     }) 
+     }
+     const updateProfileImage =  await User.findByIdAndUpdate(
+         userId,
+         {profileImage},
+         {new: true}
+     ).select("-password")
+ 
+      res.status(200).json({
+         success: true,
+         message: "Profile Image Uploaded",
+         user: updateProfileImage
+ })
+   } catch (error) {
+         return res.status(500).json({
+            success: false,
+            message: "Failed to upload profile image"
+   })
+}
+}
 export const allUsers = async(req,res)=>{
     try {
         const users = await User.find()
