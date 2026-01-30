@@ -53,3 +53,52 @@ export const getAllPosts = async (req,res)=>{
         })
     }
 }
+
+// Getting Post by Id
+export const getPostById = async (req,res)=>{
+    try {
+        const post = await Post.findById(req.params.id)
+        .populate("user","username profileImage")
+        .populate("comments.user","username profileImage")
+        if (!post) {
+            return res.status(400).json({
+            success: false,
+            message: "Post Not Found By Id"
+        }) 
+        }
+        return res.status(200).json({
+            success: true,
+            post,
+            message: "Fetched Post SuccessFully"
+        })        
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Error while fetching Post"
+        })
+    }
+}
+// Deleting Post by Id
+export const deleteById = async (req,res)=>{
+    try {
+        const userId = req.user._id
+        const post = await Post.findById(req.params.id)
+        if (!post || post.user.toString() !== userId.toString()) {
+            return res.status(400).json({
+            success: false,
+            message: "Post Not Found or unauthorized user"
+        }) 
+        }
+        await post.deleteOne() 
+        return res.status(200).json({
+            success: true,
+            post,
+            message: "Post deleted SuccessFully"
+        })        
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Error while deleting post"
+        })
+    }
+}
