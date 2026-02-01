@@ -135,3 +135,42 @@ export const togglePost = async (req,res) =>{
         })
     }
 }
+
+// Commenting Post
+export const comment = async (req,res)=>{
+    try {
+        const {text} = req.body
+        const userId = req.user._id
+        const post = await Post.findById(req.params.id)
+        if (!post) {
+            return res.status(500).json({
+            success: false,
+            message: "Post Not found"
+        })
+        }
+
+        const comment = {
+            user: userId,
+            text,
+            createdAt: new Date()
+        }
+        post.comment.push(comment)
+        
+        await post.save()
+
+        const updatePost = await Post.findById(post._id).populate(
+            "comments.user",
+            "username profileImage"
+        )
+        return res.status(200).json({
+            success: true,
+            message: "Comment success",
+            comment: updatePost.comments
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Error While Commenting on Post"
+        })
+    }
+}
