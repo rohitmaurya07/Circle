@@ -78,6 +78,7 @@ export const getPostById = async (req,res)=>{
         })
     }
 }
+
 // Deleting Post by Id
 export const deleteById = async (req,res)=>{
     try {
@@ -99,6 +100,38 @@ export const deleteById = async (req,res)=>{
         return res.status(500).json({
             success: false,
             message: "Error while deleting post"
+        })
+    }
+}
+
+// Like , Unlike Toggle
+export const togglePost = async (req,res) =>{
+    try {
+        const userId = req.user._id
+        const post = await Post.findById(req.params.id)
+        if (!post) {
+            return res.status(500).json({
+            success: false,
+            message: "Post Not found"
+        })
+        }
+        const index = post.likes.indexOf(userId)
+        if (index === -1) {
+            post.likes.push(userId)
+        }else{
+            post.likes.splice(userId)
+        }
+
+        await post.save()
+        return res.status(200).json({
+            success: true,
+            message: "Post Like SuccessFully",
+            post: post.likes
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Error While Liking Post"
         })
     }
 }
