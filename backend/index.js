@@ -5,6 +5,7 @@ import "dotenv/config"
 import bodyParser from "body-parser"
 import cookieParser from "cookie-parser"
 import userRouter from "./routes/user.routes.js"
+import postRouter from "./routes/post.routes.js"
 const app = express()
 const PORT = process.env.PORT || 4000 
 
@@ -18,6 +19,7 @@ app.use(cookieParser)
 
 // Routers
 app.use('/api/v1/user',userRouter)
+app.use('/api/v1/post',postRouter)
 
 
 app.get("/",(req,res)=>{
