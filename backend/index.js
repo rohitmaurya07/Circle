@@ -6,6 +6,7 @@ import bodyParser from "body-parser"
 import cookieParser from "cookie-parser"
 import userRouter from "./routes/user.routes.js"
 import postRouter from "./routes/post.routes.js"
+import reelRouter from "./routes/reel.route.js"
 const app = express()
 const PORT = process.env.PORT || 4000 
 
