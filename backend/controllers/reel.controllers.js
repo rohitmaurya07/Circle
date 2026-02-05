@@ -95,7 +95,7 @@ export const toggleReelLike = async (req,res) =>{
         if (index === -1) {
             reel.likes.push(userId)
         }else{
-            reel.likes.splice(userId)
+            reel.likes.splice(index,1)
         }
 
         await reel.save()

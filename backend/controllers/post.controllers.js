@@ -119,7 +119,7 @@ export const togglePost = async (req,res) =>{
         if (index === -1) {
             post.likes.push(userId)
         }else{
-            post.likes.splice(userId)
+            post.likes.splice(index,1)
         }
 
         await post.save()
