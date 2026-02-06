@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import { Schema } from "mongoose";
-import { use } from "react";
 
 const reelSchema = new Schema({
     user: {

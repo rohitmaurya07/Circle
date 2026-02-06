@@ -1,7 +1,7 @@
 import {Router} from "express"
-import { allUsers, loginUser, logoutUser, profileUser, registerUser, uploadProfile } from "../controllers/user.controllers";
-import { authMiddleware } from "../middlewares/authMiddlewares";
-import uploadCloudinary from "../middlewares/cloudinaryUpload";
+import { allUsers, loginUser, logoutUser, profileUser, registerUser, uploadProfile } from "../controllers/user.controllers.js";
+import { authMiddleware } from "../middlewares/authMiddlewares.js";
+import uploadCloudinary from "../middlewares/cloudinaryUpload.js";
 
 const router = Router();
 

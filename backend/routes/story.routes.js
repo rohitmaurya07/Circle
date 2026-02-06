@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { authMiddleware } from "../middlewares/authMiddlewares";
-import uploadCloudinary from "../middlewares/cloudinaryUpload";
-import { commentOnStory, createStory, deleteStoryById, getAllStories, toggleStoryLike, viewStory } from "../controllers/story.controllers";
+import { authMiddleware } from "../middlewares/authMiddlewares.js";
+import uploadCloudinary from "../middlewares/cloudinaryUpload.js";
+import { commentOnStory, createStory, deleteStoryById, getAllStories, toggleStoryLike, viewStory } from "../controllers/story.controllers.js";
 const router = Router()
 
 router.post("/create",

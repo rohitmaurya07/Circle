@@ -1,4 +1,4 @@
-import User from "../models/user.model"
+import User from "../models/user.model.js"
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 
@@ -42,6 +42,7 @@ export const registerUser = async(req,res)=>{
         res.status(500).json({success: false,message: "Error with Registration!"})
     }
 }
+
 export const loginUser = async(req,res)=>{
     const {email, password} = req.body
 
@@ -53,14 +54,14 @@ export const loginUser = async(req,res)=>{
         if (!findUser) {
             return res.status(422).json({message: "Invalid Credentials"})
         }
-        const isMatchedPassword = await bcrypt.compareSync(password,findUser.password)
+        const isMatchedPassword =  bcrypt.compareSync(password,findUser.password)
  if (!isMatchedPassword) {
             return res.status(422).json({message: "Invalid Credentials"})
         }
         
-        const token = jwt.sign({_id: user._id},process.env.JWT_SECRET,{expiresIn: '5y'})
+        const token = jwt.sign({_id: findUser._id},process.env.JWT_SECRET,{expiresIn: '7d'})
 
-        const {password: pass,...rest} = user._doc;
+        const {password: pass,...rest} = findUser._doc;
 
         const options = {
             httpOnly: true,
@@ -75,7 +76,9 @@ export const loginUser = async(req,res)=>{
             user: rest,
         })
     } catch (error) {
-        res.status(500).json({success: false,message: "Error with Login!"})
+        console.log("Error hai bhai login mai", error);
+        
+        res.status(500).json({success: false,message: "Error while Login!"})
     }
 }
 
@@ -98,12 +101,14 @@ export const logoutUser = async(req,res)=>{
 }
 
 export const profileUser = async(req,res)=>{
-    const user = req.user
+    const userId = req.user?._id
+    const user = await User.findById(userId).select("-password")
     res.status(200).json({
         success: true,
         user
     })
 }
+
 export const uploadProfile = async(req,res)=>{
     const userId = req.user._id
    try {

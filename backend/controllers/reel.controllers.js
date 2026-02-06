@@ -1,4 +1,4 @@
-import Reel from "../models/reel.model";
+import Reel from "../models/reel.model.js";
 
 // Creating Reel
 export const createReel = async (req,res)=>{

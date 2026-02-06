@@ -1,4 +1,4 @@
-import Story from "../models/story.model";
+import Story from "../models/story.model.js";
 
 
 // Creating Story
