@@ -59,7 +59,7 @@ export const getReelById = async (req,res)=>{
         const reel = await Reel.findById(req.params.id)
         .populate("user","username profileImage")
         .populate("comments.user","username profileImage")
-        if (!post) {
+        if (!reel) {
             return res.status(400).json({
             success: false,
             message: "reel Not Found By Id"
@@ -132,7 +132,7 @@ export const commentReel = async (req,res)=>{
             createdAt: new Date()
         }
 
-        reel.comment.push(comment)
+        reel.comments.push(comment)
         
         await reel.save()
 
@@ -148,7 +148,7 @@ export const commentReel = async (req,res)=>{
     } catch (error) {
         return res.status(500).json({
             success: false,
-            message: "Error While Commenting on Post"
+            message: "Error While Commenting on Reel"
         })
     }
 }

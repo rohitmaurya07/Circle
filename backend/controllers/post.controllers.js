@@ -1,4 +1,5 @@
 import Post from "../models/post.model.js";
+import User from "../models/user.model.js";
 
 
 // Creating Post
@@ -20,10 +21,17 @@ export const createPost = async (req,res)=>{
             mediaUrl,
             caption
         })
-    
+        const user = await User.findById(userId)
+
+        if (user) {
+            user?.posts.push(post?._id)
+            await user.save()
+        }
+
         return res.status(201).json({
             success: true,
-            message: "Post Created Successfully"
+            message: "Post Created Successfully",
+            post
         })
     } catch (error) {
         return res.status(500).json({
@@ -36,10 +44,12 @@ export const createPost = async (req,res)=>{
 // Getting All Posts
 export const getAllPosts = async (req,res)=>{
     try {
+        
         const posts = await Post.find()
         .populate("user","username profileImage")
-        .populate("comments.user","username profileImage")
+        .populate("comment.user","username profileImage")
         .sort({createdAt: -1});
+        
 
         return res.status(200).json({
             success: true,
@@ -57,9 +67,10 @@ export const getAllPosts = async (req,res)=>{
 // Getting Post by Id
 export const getPostById = async (req,res)=>{
     try {
+        
         const post = await Post.findById(req.params.id)
         .populate("user","username profileImage")
-        .populate("comments.user","username profileImage")
+        .populate("comment.user","username profileImage")
         if (!post) {
             return res.status(400).json({
             success: false,
@@ -139,9 +150,12 @@ export const togglePost = async (req,res) =>{
 // Commenting Post
 export const comment = async (req,res)=>{
     try {
+        
         const {text} = req.body
         const userId = req.user._id
+        
         const post = await Post.findById(req.params.id)
+        
         if (!post) {
             return res.status(500).json({
             success: false,
@@ -159,7 +173,7 @@ export const comment = async (req,res)=>{
         await post.save()
 
         const updatePost = await Post.findById(post._id).populate(
-            "comments.user",
+            "comment.user",
             "username profileImage"
         )
         return res.status(200).json({

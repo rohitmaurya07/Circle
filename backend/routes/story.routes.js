@@ -10,7 +10,7 @@ router.post("/create",
 )
 router.get("/all",authMiddleware, getAllStories)
 router.get("/:id/view",authMiddleware, viewStory)
-router.delete("/:id",authMiddleware, deleteStoryById)
+router.delete("/:id/delete",authMiddleware, deleteStoryById)
 router.put("/:id/like",authMiddleware,toggleStoryLike)
 router.post("/:id/comment",authMiddleware,commentOnStory)
 

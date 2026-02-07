@@ -36,10 +36,11 @@ export const createStory = async (req,res)=>{
 // Getting All stories
 export const getAllStories = async (req,res)=>{
     try {
-        const stories = await Story.find({expireAt: { $gt: now}})
-        .populate("user","username profileImage")
-        .populate("comments.user","username profileImage")
-        .sort({createdAt: -1});
+        const stories = await Story.find()
+        // const stories = await Story.find({expireAt: { $gt: now}})
+        // .populate("user","username profileImage")
+        // .populate("comments.user","username profileImage")
+        // .sort({createdAt: -1});
 
         return res.status(200).json({
             success: true,
@@ -125,7 +126,7 @@ export const commentOnStory = async (req,res)=>{
         const {text} = req.body
         const userId = req.user._id
         const story = await Story.findById(req.params.id)
-        if (!post) {
+        if (!story) {
             return res.status(500).json({
             success: false,
             message: "Post Not found"
@@ -136,7 +137,7 @@ export const commentOnStory = async (req,res)=>{
             user: userId,
             text,
         }
-        story.comment.push(comment)
+        story.comments.push(comment)
         
         await story.save()
 
@@ -147,7 +148,7 @@ export const commentOnStory = async (req,res)=>{
         return res.status(200).json({
             success: true,
             message: "Comment success",
-            comments: updateStory.comment
+            comments: updateStory.comments
         })
     } catch (error) {
         return res.status(500).json({
@@ -163,7 +164,7 @@ export const deleteStoryById = async (req,res)=>{
     try {
         const userId = req.user._id
         const story = await Story.findById(req.params.id)
-        if (!post || story.user.toString() !== userId.toString()) {
+        if (!story || story.user.toString() !== userId.toString()) {
             return res.status(400).json({
             success: false,
             message: "Story Not Found or unauthorized user"
