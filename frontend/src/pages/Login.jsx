@@ -12,6 +12,7 @@ const Login = () => {
         confirmPassword: "",
         newPassword: ""
     })
+    const token = ""
     const handlerChange = (e) => {
         const { name, value } = e.target
         setformData({ ...formData, [name]: value })
@@ -23,6 +24,8 @@ const Login = () => {
         e.preventDefault()
         console.log("Handle Submit")
     }
+
+    
 
     const switchView = (newView)=>{
         setview(newView)
@@ -49,6 +52,7 @@ const Login = () => {
                     view={view} 
                     formData={formData}
                     errors={errors}
+                    token={token}
                     handlerChange={handlerChange}
                     handleSubmit={handleSubmit}
                     switchView={switchView}
