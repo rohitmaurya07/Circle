@@ -4,11 +4,11 @@ const AuthForm = ({ view, formData, errors,token, handlerChange, handleSubmit, s
 
     const renderLoginForm = () => (
         <>
-            <div>
-                <h2 className='text-content font-bold text-4xl'>Circle</h2>
+            <div className=''>
+                <h2 className='text-content  font-bold text-4xl'>Circle</h2>
                 <p className='text-base'>Log into Your Account</p>
             </div>
-            <div className='flex flex-col gap-3 pt-5 w-56'>
+            <div className='flex flex-col gap-3 pt-5 w-72 pr-5'>
                 {/* Email */}
 
                 <input
