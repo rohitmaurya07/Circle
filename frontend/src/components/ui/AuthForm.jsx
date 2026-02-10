@@ -24,6 +24,7 @@ const AuthForm = ({ view, formData, errors,token, handlerChange, handleSubmit, s
                     type="password"
                     name='password'
                     value={formData.password}
+                    onChange={handlerChange}
                     placeholder='Password'
                     className={`bg-base rounded-2xl p-2 pl-4 text-content outline-0 ${errors.password ? "border-red-600" : "border-gray-700"}`}
                 />

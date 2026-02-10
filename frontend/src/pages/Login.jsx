@@ -1,9 +1,12 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import AuthForm from '../components/ui/AuthForm'
-import { useSearchParams } from 'react-router-dom'
-
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import {useDispatch} from 'react-redux'
+import { loginUser, registerUser } from '../redux/slices/userSlice'
 
 const Login = () => {
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
     const [searchParams] = useSearchParams()
     const [view, setview] = useState("login")
     const [errors, seterrors] = useState('')
@@ -14,6 +17,7 @@ const Login = () => {
         confirmPassword: "",
         newPassword: ""
     })
+
 
     const validateForm = () => {
         const newErrors = {}
@@ -42,8 +46,12 @@ const Login = () => {
         seterrors(newErrors)
         return Object.keys(newErrors).length === 0
     }
-
     const token = searchParams.get("token")
+    useEffect(()=>{
+        if (token) {
+            setview("changePassword")
+        }
+    },[token])
     
     const handlerChange = (e) => {
         const { name, value } = e.target
@@ -54,15 +62,28 @@ const Login = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        if (!validateForm) return
+        if (!validateForm()) return
+
 
         if (view == "register") {
+            dispatch(registerUser({
+                username: formData.username,
+                email: formData.email,
+                password: formData.password
+            },navigate))
             console.log("register")
         }
         else if (view == "login") {
+            dispatch(loginUser({
+                email: formData.email,
+                password: formData.password
+            },navigate))
             console.log("login")
         }
         else if (view == "forgotPassword") {
+            // dispatch(({ 
+            //     password: formData.password
+            // }))
             console.log("forgot Password")
         }
         else if (view == "changePassword") {
