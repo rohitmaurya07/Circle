@@ -6,10 +6,10 @@ import Home from './pages/Home'
 import { useDispatch } from 'react-redux'
 import { getCurrentUser } from './redux/slices/userSlice'
 const App = () => {
-  const dispatch = useDispatch()
-  useEffect(() => {
-    dispatch(getCurrentUser())
-  }, [dispatch])
+  // const dispatch = useDispatch()
+  // useEffect(() => {
+  //   dispatch(getCurrentUser())
+  // }, [dispatch])
   
   return (
     <>

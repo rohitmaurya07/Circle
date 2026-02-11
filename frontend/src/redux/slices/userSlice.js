@@ -51,9 +51,11 @@ export const registerUser = (userData, navigate) => async (dispatch) => {
 }
 
 // Login
-export const     loginUser = (userData, navigate) => async (dispatch) => {
+export const loginUser = (userData, navigate) => async (dispatch) => {
     dispatch(setLoading(true))
     try {
+        console.log("Start Logging");
+        
         const { data } = await axiosInstance.post('/user/login', userData)
         if (data.success) {
             dispatch(setUser(data?.user))

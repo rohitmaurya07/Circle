@@ -11,8 +11,14 @@ import connectDB from "./db/connectDB.js"
 const app = express()
 const PORT = process.env.PORT || 4000 
 
+const corsInstance = {
+    origin: ["http://localhost:5173"],
+    credentials: true,
+    methods: ["GET","POST","PUT"]
+}
+
 // Middlewares
-app.use(cors())
+app.use(cors(corsInstance))
 app.use(bodyParser.urlencoded({extended: false}))
 // app.use(bodyParser.json())
 app.use(express.json())

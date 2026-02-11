@@ -61,11 +61,14 @@ const Login = () => {
     }
 
     const handleSubmit = (e) => {
-        e.preventDefault()
+        e.preventDefault()  
+        console.log("jhgh");
+        
         if (!validateForm()) return
 
 
         if (view == "register") {
+            
             dispatch(registerUser({
                 username: formData.username,
                 email: formData.email,
@@ -74,6 +77,7 @@ const Login = () => {
             console.log("register")
         }
         else if (view == "login") {
+            console.log("View Log");
             dispatch(loginUser({
                 email: formData.email,
                 password: formData.password

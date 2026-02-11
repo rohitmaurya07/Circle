@@ -200,7 +200,7 @@ const AuthForm = ({ view, formData, errors,token, handlerChange, handleSubmit, s
 
     return (
         <div>
-            <form action="">
+            <form onSubmit={handleSubmit}>
                 {renderForm()}
                 {/* {renderTokenError()} */}
             </form>
