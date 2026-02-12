@@ -32,7 +32,7 @@ const Login = () => {
             if (!formData.email) newErrors.email = "Email is required"
             else if (!emailRegex.test(formData.email)) newErrors.email = "Invalid Email"
             if (!formData.password) newErrors.password = "Password is Required"
-            else if (!formData.password.length < 6) newErrors.password = "Password is must be 6 Characters"
+            // else if (!formData.password.length < 6) newErrors.password = "Password is must be 6 Characters"
         } else if (view === "forgotPassword") {
             if (!formData.email) newErrors.email = "Email is required"
             else if (!emailRegex.test(formData.email)) newErrors.email = "Invalid Email"

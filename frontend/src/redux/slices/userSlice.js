@@ -36,9 +36,11 @@ export default userSlice.reducer
 export const registerUser = (userData, navigate) => async (dispatch) => {
     dispatch(setLoading(true))
     try {
-        const { data } = await axiosInstance.post('/user/register')
+        const { data } = await axiosInstance.post('/user/register',userData)
         if (data.success) {
             dispatch(setUser(data?.user))
+            console.log(data);
+            
             toast.success(data.message || "Registered SuccessFully")
             navigate("/")
         }
