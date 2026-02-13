@@ -2,7 +2,9 @@ import React from 'react'
 
 const CreateMedia = () => {
   return (
-    <div>CreateMedia</div>
+    <>
+      <h1>Helo</h1>
+    </>
   )
 }
 
