@@ -36,7 +36,7 @@ const SideBar = () => {
             to={item.link}
             className={({ isActive }) =>
               `flex items-center gap-3 p-2 rounded-2xl transition-all duration-300 hover:bg-gray-100 ${
-                isActive ? "bg-black text-white" : ""
+                isActive ? "bg-content text-white" : ""
               }`
             }
           >
