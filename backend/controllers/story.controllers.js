@@ -36,11 +36,14 @@ export const createStory = async (req,res)=>{
 // Getting All stories
 export const getAllStories = async (req,res)=>{
     try {
-        const stories = await Story.find()
-        // const stories = await Story.find({expireAt: { $gt: now}})
-        // .populate("user","username profileImage")
-        // .populate("comments.user","username profileImage")
-        // .sort({createdAt: -1});
+       
+        const now = new Date();
+        const userId = req.user?._id
+        const stories = await Story.find({expireAt: { $gt: now}, user : {$ne: userId}})
+        .populate("user","username profileImage")
+        .populate("comments.user","username profileImage")
+        .populate("comments.user","username profileImage")
+        .sort({createdAt: -1});
 
         return res.status(200).json({
             success: true,

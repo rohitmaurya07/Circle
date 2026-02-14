@@ -34,7 +34,7 @@ const Story = () => {
     const isLastStoryOfLastUser = currentStoryIndex === stories.length - 1 && currentStoryIndex === currentUserStories.length - 1
 
 
-
+    // Getting all the stories
     const getAllStories = async () => {
         try {
             const { data } = await axiosInstance.get("/story/all")
@@ -50,11 +50,16 @@ const Story = () => {
     }, [])
 
 
-
+    // Handle Create Story
     const handleCreateStory = () => {
         setIsCreateStoryModal(true)
     }
+    // Handle Show Story Model
+    const handleShowStoryModel = () => {
+        setShowStoryModal(true)
+    }
 
+    // Handle User Click
     const handleUserClick = (index) => {
         setcurrentUserIndex(index)
         setShowStoryModal(true)
@@ -136,6 +141,8 @@ const Story = () => {
 
     return (
         <>
+        <div className='flex gap-4'>
+
             <div>
                 <div className='bg-content h-15 w-15 rounded-full border-4 border-base'>
                     <div>
@@ -145,7 +152,7 @@ const Story = () => {
                 <span className='text-content text-sm'>Create Story</span>
             </div>
 
-            <div className='flex space-x-4 overflow-x-auto no-scrollbar'>
+            <div className='flex  space-x-4 overflow-x-auto no-scrollbar'>
 
                 {stories.map((userStories, index) => (
                     <div key={userStories.user.id} onClick={() => handleUserClick()} className='flex flex-col items-center cursor-pointer shrink-0 '>
@@ -163,7 +170,15 @@ const Story = () => {
                 <div className='w-full max-w-2xl '>
                     <CreateMedia />
                 </div>
-            </Modal>
+            </Modal> 
+
+            {/* Show Story Modal */}
+            <Modal  open={showStoryModal} onOpenChange={setShowStoryModal}>
+                <div className='w-full max-w-2xl '>
+                    <CreateMedia />
+                </div>
+            </Modal> 
+        </div>
         </>
     )
 }

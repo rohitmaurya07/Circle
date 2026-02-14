@@ -15,9 +15,6 @@ export const Modal = ({open,onOpenChange,children})=> {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <form>
-        <DialogTrigger asChild>
-          <Button variant="outline">Open Dialog</Button>
-        </DialogTrigger>
         <DialogContent className="sm:max-w-sm">
           <div className="grid gap-4">
             {children}
