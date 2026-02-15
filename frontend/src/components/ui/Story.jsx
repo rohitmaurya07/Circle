@@ -28,13 +28,15 @@ const Story = () => {
 
     const currentUserStories = stories[currentUserIndex]?.stories || []
     const currentStory = currentUserStories[currentStoryIndex]
-    const currentStoryUser = stories[currentStoryIndex]?.user
+    const currentStoryUser = stories[currentUserIndex]?.user
 
     // check if last story
-    const isLastStoryOfLastUser = currentStoryIndex === stories.length - 1 && currentStoryIndex === currentUserStories.length - 1
+    const isLastStoryOfLastUser =
+        currentUserIndex === stories.length - 1 &&
+        currentStoryIndex === currentUserStories.length - 1;
 
-    const canGoPrevious = true
-    const canGoNext = true
+    const canGoPrevious = currentUserIndex > 0 || currentStoryIndex > 0
+    const canGoNext = !isLastStoryOfLastUser
 
     // Getting all the stories
     const getAllStories = async () => {
@@ -53,6 +55,9 @@ const Story = () => {
         getAllStories()
     }, [])
 
+    
+    
+
 
     // Handle Create Story
     const handleCreateStory = () => {
@@ -65,11 +70,11 @@ const Story = () => {
 
     // Handle User Click
     const handleUserClick = (index) => {
-        // console.log("hello",index,currentStoryUser);
+        console.log("hello", index, currentStoryUser);
 
         setcurrentUserIndex(index)
         setShowStoryModal(true)
-        setcurrentStoryIndex(index)
+        setcurrentStoryIndex(0)
         setprogressBar(0)
         setIsPlaying(true)
     }
@@ -124,30 +129,124 @@ const Story = () => {
     }
 
     const handleNextStory = useCallback(() => {
-        const currentUserStories = stories[currentUserIndex].stories
         if (isLastStoryOfLastUser) {
             setTimeout(() => {
                 setShowStoryModal(false)
             }, 300);
+            return;
         }
-        return
+
+        const currentUserStories = stories[currentUserIndex]?.stories || [];
 
         if (currentStoryIndex < currentUserStories.length - 1) {
-            setcurrentStoryIndex(currentStoryIndex + 1)
+            setcurrentStoryIndex(prev => prev + 1)
             setprogressBar(0)
             setIsPlaying(true)
         } else if (currentUserIndex < stories.length - 1) {
-            setcurrentUserIndex(currentUserIndex + 1)
+            setcurrentUserIndex(prev => prev + 1)
             setcurrentStoryIndex(0)
             setprogressBar(0)
             setIsPlaying(true)
         } else {
-            setShowStoryModal(false)
+            setShowStoryModal(false) // Fallback close
         }
     }, [stories, currentUserIndex, currentStoryIndex, isLastStoryOfLastUser, setShowStoryModal, setcurrentStoryIndex, setprogressBar, setIsPlaying])
 
 
 
+    // Handle Story Progress
+
+        useEffect(() => {
+      if (!showStoryModal || !currentStory) {
+        return
+      }
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current)
+        progressIntervalRef.current = null
+      }
+      if (currentStory.mediaType === "video") {
+        const video = videoRef.current
+        if (!video) return
+        video.muted = isMuted
+        if (isPlaying) {
+            video.currentTime = 0
+            video.play().catch((err) => console.log("Video Play Error", err))
+            setIsPlaying(false)
+        }else {
+            video.pause()
+        }
+        
+      }else if (currentStory.mediaType === "image") {
+        const imageDuration = 5000
+        const startTime = Date.now() - (progressBar / 100) * imageDuration
+        progressIntervalRef.current = setInterval(() => {
+            const elapsed = Date.now() - startTime
+            const newProgress = Math.min(100, (elapsed / imageDuration) * 100)
+            setprogressBar(newProgress)
+            if (newProgress >= 100) {
+                clearInterval(progressIntervalRef.current)
+                progressIntervalRef.current = null
+                handleNextStory()
+            }
+        }, 100)
+      }
+      
+      
+    }, [showStoryModal, progressBar, currentStory, isMuted, handleNextStory])
+
+
+    // Handle Video Progress
+
+    useEffect(() => {
+        const video = videoRef.current
+      if (!video || !currentStory?.mediaType === "video") return
+
+      const handleTimeUpdate = ()=>{
+        if (video.duration) {
+            const progress = (video.currentTime / video.duration) * 100
+            setprogressBar(progress)
+        }
+      }
+      const handleVideoEnded = ()=>{
+        setprogressBar(100)
+        handleNextStory()
+      }
+
+      video.addEventListener("timeupdate", handleTimeUpdate)
+      video.addEventListener("ended", handleVideoEnded)
+      return ()=>{
+        video.removeEventListener("timeupdate", handleTimeUpdate)
+        video.removeEventListener("ended", handleVideoEnded)
+      }
+    }, [currentStory, handleNextStory])
+
+    
+    
+    // Reset Progress Bar
+    useEffect(() => {
+        if (!showStoryModal || !currentStory) return
+      setprogressBar(0)
+    
+      if (currentStory.mediaType === "video") {
+            const video = videoRef.current
+            if (!video) {
+                video.currentTime = 0
+            }
+      }
+    }, [currentStory, showStoryModal])
+
+
+
+    // Auto Close Stories
+    useEffect(() => {
+        if (showStoryModal || isLastStoryOfLastUser && progressBar >= 100) {
+            const timer = setTimeout(() => {
+                setShowStoryModal(false)
+            }, 300)
+            return () => clearTimeout(timer)
+        }
+    }, [showStoryModal, isLastStoryOfLastUser, progressBar])
+        
 
 
     return (
@@ -249,7 +348,7 @@ const Story = () => {
                         {/* Caption */}
                         {currentStory?.caption && (
                             <div className='absolute bottom-4 left-4 right-4 z-10'>
-                                <p className='text-content text-sm'>{currentStory?.caption}</p>
+                                <p className='text-highlight text-sm'>{currentStory?.caption}</p>
                             </div>
                         )}
 
