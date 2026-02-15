@@ -11,7 +11,7 @@ import  { Toaster } from 'react-hot-toast';
 
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+  // <StrictMode>
    <Provider store={store}>
     <Toaster
   position="top-center"
@@ -21,5 +21,5 @@ createRoot(document.getElementById('root')).render(
     <App />
     </BrowserRouter>
     </Provider> 
-  </StrictMode>,
+  // </StrictMode>,
 )

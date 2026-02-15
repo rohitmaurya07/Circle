@@ -2,24 +2,24 @@ import Story from "../models/story.model.js";
 
 
 // Creating Story
-export const createStory = async (req,res)=>{
+export const createStory = async (req, res) => {
     try {
-        const {mediaType} = req.body;
+        const { mediaType } = req.body;
         const userId = req.user._id;
-        if (!req.file || !req.file.path ) {
+        if (!req.file || !req.file.path) {
             return res.status(400).json({
                 success: false,
                 message: "Story Not Found"
             })
         }
-    
+
         const mediaUrl = req.file.path;
         const story = await Story.create({
             user: userId,
             mediaType,
             mediaUrl
         })
-    
+
         return res.status(201).json({
             success: true,
             message: "Story Uploaded Successfully",
@@ -34,22 +34,74 @@ export const createStory = async (req,res)=>{
 }
 
 // Getting All stories
-export const getAllStories = async (req,res)=>{
+export const getAllStories = async (req, res) => {
     try {
-       
+
         const now = new Date();
         const userId = req.user?._id
-        const stories = await Story.find({expireAt: { $gt: now}, user : {$ne: userId}})
-        .populate("user","username profileImage")
-        .populate("comments.user","username profileImage")
-        .populate("comments.user","username profileImage")
-        .sort({createdAt: -1});
+        const stories = await Story.find({ expireAt: { $gt: now }, user: { $ne: userId } })
+            .populate("user", "username profileImage")
+            .populate({ path: "comments.user", select: "username profileImage" })
+            .populate("viewers", "username profileImage")
+            .sort({ createdAt: -1 });
+
+        const storiesByUser = stories.reduce((acc, story) => {
+
+            if (!story?.user) return acc;
+
+            const authorId = story.user._id.toString(); // Use distinct variable for author
+            if (!acc[authorId]) {
+                acc[authorId] = {
+                    user: story.user,
+                    stories: [],
+                    isUnViewed: false
+                }
+            }
+            // Check if current user (userId from outer scope) has viewed
+            if (userId) {
+                const hasViewed = story.viewers.some(
+                    (view) => view?._id.toString() === userId.toString()
+                )
+                if (!hasViewed) {
+                    acc[authorId].isUnViewed = true; // Set flag instead of overwriting object
+                }
+            }
+            acc[authorId].stories.push(story);
+            return acc;
+        }, {})
+
+        const userStories = await Story.find({
+            user: userId,
+            expireAt: { $gt: now }
+        })
+            .populate("user", "username profileImage")
+            .populate({ path: "comments.user", select: "username profileImage" })
+            .populate("viewers", "username profileImage")
+            .sort({ createdAt: -1 });
+
+        if (userStories.length > 0) {
+            storiesByUser[userId] = {
+                user: req.user,
+                stories: userStories,
+                // isUnViewed = false,
+                isOwn: true,
+            }
+        }
+
+        const storyArray = Object.values(storiesByUser)
+        const sortedStories = storyArray.sort((a, b) => {
+            if (a.isOwn) return -1
+            if (b.isOwn) return 1
+            // if (a.isUnViewed && !b.isUnViewed) return -1
+            // if (!a.isUnViewed && b.isUnViewed) return 1
+            return 0
+        })
 
         return res.status(200).json({
             success: true,
-            stories,
+            stories: sortedStories,
             message: "Fetched All Stories SuccessFully"
-        })        
+        })
     } catch (error) {
         return res.status(500).json({
             success: false,
@@ -59,10 +111,10 @@ export const getAllStories = async (req,res)=>{
 }
 
 // View Story
-export const viewStory = async (req,res)=>{
+export const viewStory = async (req, res) => {
 
     try {
-        const {id} = req.params
+        const { id } = req.params
         const userId = req.user._id
         const story = await Story.findById(id)
         if (!story) {
@@ -92,21 +144,21 @@ export const viewStory = async (req,res)=>{
 
 
 // Like , Unlike Toggle for Story
-export const toggleStoryLike = async (req,res) =>{
+export const toggleStoryLike = async (req, res) => {
     try {
         const userId = req.user._id
         const story = await Story.findById(req.params.id)
         if (!story) {
             return res.status(500).json({
-            success: false,
-            message: "Story Not found"
-        })
+                success: false,
+                message: "Story Not found"
+            })
         }
         const index = story.likes.indexOf(userId)
         if (index === -1) {
             story.likes.push(userId)
-        }else{
-            story.likes.splice(index,1)
+        } else {
+            story.likes.splice(index, 1)
         }
 
         await story.save()
@@ -124,16 +176,16 @@ export const toggleStoryLike = async (req,res) =>{
 }
 
 // Commenting on Story
-export const commentOnStory = async (req,res)=>{
+export const commentOnStory = async (req, res) => {
     try {
-        const {text} = req.body
+        const { text } = req.body
         const userId = req.user._id
         const story = await Story.findById(req.params.id)
         if (!story) {
             return res.status(500).json({
-            success: false,
-            message: "Post Not found"
-        })
+                success: false,
+                message: "Post Not found"
+            })
         }
 
         const comment = {
@@ -141,7 +193,7 @@ export const commentOnStory = async (req,res)=>{
             text,
         }
         story.comments.push(comment)
-        
+
         await story.save()
 
         const updateStory = await Story.findById(story._id).populate(
@@ -163,22 +215,22 @@ export const commentOnStory = async (req,res)=>{
 
 
 // Deleting Story by Id
-export const deleteStoryById = async (req,res)=>{
+export const deleteStoryById = async (req, res) => {
     try {
         const userId = req.user._id
         const story = await Story.findById(req.params.id)
         if (!story || story.user.toString() !== userId.toString()) {
             return res.status(400).json({
-            success: false,
-            message: "Story Not Found or unauthorized user"
-        }) 
+                success: false,
+                message: "Story Not Found or unauthorized user"
+            })
         }
-        await story.deleteOne() 
+        await story.deleteOne()
         return res.status(200).json({
             success: true,
             message: "Story deleted SuccessFully",
             story
-        })        
+        })
     } catch (error) {
         return res.status(500).json({
             success: false,
