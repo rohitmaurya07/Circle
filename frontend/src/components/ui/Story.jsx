@@ -10,6 +10,7 @@ import {
   Send,
   Volume2,
   VolumeOff,
+  X,
 } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { axiosInstance } from "../../lib/axios";
@@ -31,6 +32,7 @@ const Story = () => {
   const [isPlaying, setIsPlaying] = useState(true);
   const [progressBar, setProgressBar] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
+  const [showCommentModel, setshowCommentModel] = useState(true)
 
   const currentUserStories = stories[currentUserIndex]?.stories || [];
   const currentStory = currentUserStories[currentStoryIndex];
@@ -108,6 +110,24 @@ const Story = () => {
   };
 
   // =============================
+  // HELPER
+  // =============================
+  const formatTimeAgo = (timestamp) => {
+    if (!timestamp) return null;
+    const now = new Date();
+    const diff = now - new Date(timestamp);
+    const seconds = Math.floor(diff / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (days > 0) return `${days}d`;
+    if (hours > 0) return `${hours}h`;
+    if (minutes > 0) return `${minutes}m`;
+    return "Just now";
+  };
+
+  // =============================
   // STORY PROGRESS CONTROLLER
   // =============================
   useEffect(() => {
@@ -148,7 +168,7 @@ const Story = () => {
       video.muted = isMuted;
 
       if (isPlaying) {
-        video.play().catch(() => {});
+        video.play().catch(() => { });
       } else {
         video.pause();
       }
@@ -231,7 +251,7 @@ const Story = () => {
 
       {/* STORY MODAL */}
       <Modal open={showStoryModal} onOpenChange={setShowStoryModal}>
-        <div className="w-full max-w-2xl h-full border-2 p-10 ">
+        <div className="w-full h-full relative flex flex-col bg-black">
 
           {/* PROGRESS BARS */}
           <div className="absolute top-0 left-0 right-0 flex space-x-1 p-3 z-10">
@@ -244,16 +264,33 @@ const Story = () => {
                       index === currentStoryIndex
                         ? `${progressBar}%`
                         : index < currentStoryIndex
-                        ? "100%"
-                        : "0%",
+                          ? "100%"
+                          : "0%",
                   }}
                 />
               </div>
             ))}
           </div>
 
+          {/* USER DETAILS */}
+          <div className="absolute top-6 left-4 flex items-center gap-3 z-20">
+            <img
+              src={currentStoryUser?.profileImage || "/default-avatar.png"}
+              alt={currentStoryUser?.username}
+              className="w-10 h-10 rounded-full border border-white/20 object-cover"
+            />
+            <div className="flex gap-2 items-center">
+              <span className="text-white font-semibold text-sm drop-shadow-md">
+                {currentStoryUser?.username}
+              </span>
+              <span className="text-white/70 text-xs font-medium drop-shadow-md">
+                {formatTimeAgo(currentStory?.createdAt)}
+              </span>
+            </div>
+          </div>
+
           {/* MEDIA */}
-          <div className="flex items-center justify-center h-full p-10 ">
+          <div className="flex-1 flex items-center justify-center w-full h-full relative overflow-hidden bg-black">
             {currentStory?.mediaType === "image" ? (
               <img
                 src={currentStory?.mediaUrl}
@@ -271,17 +308,21 @@ const Story = () => {
           </div>
 
           {/* CONTROLS */}
-          <div className="absolute top-7 right-4 flex gap-3 z-10">
-            <button onClick={handlePlayPause} className="text-white">
-              {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+          <div className="absolute top-7 right-4 flex gap-3 z-30">
+            <button onClick={() => setShowStoryModal(false)} className="text-white cursor-pointer hover:bg-white/20 rounded-full p-1 transition-colors">
+              <X size={24} />
+            </button>
+            <button onClick={handlePlayPause} className="text-white cursor-pointer hover:bg-white/20 rounded-full p-1 transition-colors">
+              {isPlaying ? <Pause size={24} /> : <Play size={24} />}
             </button>
 
             {currentStory?.mediaType === "video" && (
-              <button onClick={handleMediaVolume} className="text-white">
-                {isMuted ? <VolumeOff size={20} /> : <Volume2 size={20} />}
+              <button onClick={handleMediaVolume} className="text-white cursor-pointer hover:bg-white/20 rounded-full p-1 transition-colors">
+                {isMuted ? <VolumeOff size={24} /> : <Volume2 size={24} />}
               </button>
             )}
           </div>
+
 
           {/* NAVIGATION */}
           <div className="absolute inset-0 flex justify-between items-center">
@@ -297,16 +338,52 @@ const Story = () => {
             />
           </div>
 
-          <div className="flex justify-between items-center absolute bottom-0 left-0 right-0 p-3 z-10">
-            <div className="flex gap-2 cursor-pointer">
-            <Heart  className="text-white relative z-20" />
-            <MessageCircle className="text-white"/>
+          {/* on hold pause story */}
+          <div className="absolute inset-0 flex justify-between items-center">
+            <button
+              onMouseDown={() => setIsPlaying(false)}
+              onMouseUp={() => setIsPlaying(true)}
+              className="w-1/2 h-full"
+            />
+          </div>
+
+          {/* Bottom */}
+
+          <div className="flex justify-between items-center absolute bottom-0 left-0 right-0 p-4 z-20 bg-linear-to-t from-black/80 to-transparent pt-10">
+            <div className="flex gap-4 cursor-pointer">
+              <Heart size={25} className="text-white relative z-20" />
+              <MessageCircle size={25} className="text-white" />
             </div>
             <div className="flex border-2 border-white rounded-full p-2 cursor-pointer">
-                <input type="text" placeholder="Send a message" className="bg-transparent border-none outline-none text-white" />
-            <Send className="text-white"/>
+              <input type="text" placeholder="Send a message" className="bg-transparent border-none outline-none text-white w-[250px] px-2" />
+              <Send size={25} className="text-white " />
             </div>
           </div>
+
+{/* Show All Comments */}
+          {showCommentModel && (
+            <div className="absolute bottom-1  bg-content z-60 w-full">
+                <h4 className="text-white text-2xl font-bold">Comments</h4>
+                 <div className="flex flex-col gap-2">
+                  {[10,20,30].map(()=>{
+                    return(
+                      <div className="comment border-2 border-gray-600">
+                        <img src="" alt="" srcset="" />
+                        <div>
+                          <p>username</p>
+                        <p>Hello how are u</p>
+                        </div>
+                    </div>
+                    )
+                  })}
+                 </div>
+                 <div className="flex border-2 border-white rounded-full p-2 cursor-pointer">
+                  <input type="text" placeholder="Add a Comment" className="bg-transparent border-none outline-none text-white w-[250px] px-2" />
+                  <Send size={25} className="text-white cursor-pointer" />
+                 </div>
+            </div>
+          )}
+
         </div>
       </Modal>
     </div>
