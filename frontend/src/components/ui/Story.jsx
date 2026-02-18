@@ -32,7 +32,7 @@ const Story = () => {
   const [isPlaying, setIsPlaying] = useState(true);
   const [progressBar, setProgressBar] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
-  const [showCommentModel, setshowCommentModel] = useState(true)
+  const [showCommentModel, setshowCommentModel] = useState(false)
 
   const currentUserStories = stories[currentUserIndex]?.stories || [];
   const currentStory = currentUserStories[currentStoryIndex];
@@ -352,7 +352,7 @@ const Story = () => {
           <div className="flex justify-between items-center absolute bottom-0 left-0 right-0 p-4 z-20 bg-linear-to-t from-black/80 to-transparent pt-10">
             <div className="flex gap-4 cursor-pointer">
               <Heart size={25} className="text-white relative z-20" />
-              <MessageCircle size={25} className="text-white" />
+              <MessageCircle onClick={()=>setshowCommentModel(true)} size={25} className="text-white" />
             </div>
             <div className="flex border-2 border-white rounded-full p-2 cursor-pointer">
               <input type="text" placeholder="Send a message" className="bg-transparent border-none outline-none text-white w-[250px] px-2" />
