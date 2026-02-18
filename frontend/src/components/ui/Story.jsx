@@ -14,12 +14,14 @@ import {
 } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { axiosInstance } from "../../lib/axios";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import CreateMedia from "./CreateMedia";
 import { Modal } from "./Modal";
+import { getAllStories } from "../../redux/slices/storySlice";
 
 const Story = () => {
-  const [stories, setStories] = useState([]);
+  const dispatch = useDispatch()
+  const {stories} = useSelector((state) => state.story)
   const { user: currentUser } = useSelector((state) => state.user);
 
   const videoRef = useRef(null);
@@ -45,25 +47,13 @@ const Story = () => {
   const canGoPrevious = currentUserIndex > 0 || currentStoryIndex > 0;
   const canGoNext = !isLastStoryOfLastUser;
 
-  // =============================
-  // Fetch Stories
-  // =============================
-  const getAllStories = async () => {
-    try {
-      const { data } = await axiosInstance.get("/story/all");
-      setStories(data?.stories || []);
-    } catch (error) {
-      console.log("Error While Getting Stories", error);
-    }
-  };
 
   useEffect(() => {
-    getAllStories();
-  }, []);
+    dispatch(getAllStories())
+  }, [dispatch]);
 
-  // =============================
+ 
   // Navigation
-  // =============================
   const handleNextStory = useCallback(() => {
     if (isLastStoryOfLastUser) {
       setShowStoryModal(false);
@@ -98,9 +88,7 @@ const Story = () => {
     setIsPlaying(true);
   };
 
-  // =============================
   // Play / Pause
-  // =============================
   const handlePlayPause = () => {
     setIsPlaying((prev) => !prev);
   };
@@ -109,9 +97,7 @@ const Story = () => {
     setIsMuted((prev) => !prev);
   };
 
-  // =============================
   // HELPER
-  // =============================
   const formatTimeAgo = (timestamp) => {
     if (!timestamp) return null;
     const now = new Date();
@@ -127,17 +113,13 @@ const Story = () => {
     return "Just now";
   };
 
-  // =============================
   // STORY PROGRESS CONTROLLER
-  // =============================
   useEffect(() => {
     if (!showStoryModal || !currentStory) return;
 
     clearInterval(progressIntervalRef.current);
 
-    // -----------------------
     // IMAGE STORY
-    // -----------------------
     if (currentStory.mediaType === "image") {
       if (!isPlaying) return;
 

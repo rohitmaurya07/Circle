@@ -1,7 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { axiosInstance } from '../../lib/axios'
+import { useDispatch } from 'react-redux'
+import { getAllPosts } from '../../redux/slices/postSlice'
+import { getAllReels } from '../../redux/slices/reelSlice'
+import { getAllStories } from '../../redux/slices/storySlice'
 
 const CreateMedia = ({ type = "post" }) => {
+
+  const dispatch = useDispatch()
   const [file, setfile] = useState(null)
   const [caption, setCaption] = useState("")
   const [mediaType, setMediaType] = useState("")
@@ -87,6 +93,8 @@ const CreateMedia = ({ type = "post" }) => {
       }) 
 
       if (data.success) {
+        mediaType === "story" ? dispatch(getAllStories()) : ""
+        // mediaType === "story" ? dispatch(getAllStories()) : mediaType === "reel" ? dispatch(getAllReels()) : dispatch(getAllPosts())
         setfile(null)
         setpreviewUrl("")
         setCaption("")
@@ -96,10 +104,17 @@ const CreateMedia = ({ type = "post" }) => {
         setIsDragging(false)
         setIsPlaying(false)
         setIsMuted(false)
+        if (fileInputRef.current) {
+          fileInputRef.current.value = null
+        }
+      }else {
+        setError(data?.message || `${mediaType} Upload Failed`)
       }
 
     } catch (error) {
       console.log("Error While Uploading", error)
+    }finally{
+      setuploading(false)
     }
   }
 
