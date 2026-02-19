@@ -193,6 +193,11 @@ const Story = () => {
       {/* CREATE STORY */}
       <div>
         <div className="bg-content h-15 w-15 rounded-full border-4 border-base relative">
+          {isCreateStoryModal && (
+            <Modal open={isCreateStoryModal} onOpenChange={setIsCreateStoryModal}>
+              <CreateMedia />
+            </Modal>
+          )}
           <PlusCircle
             onClick={() => setIsCreateStoryModal(true)}
             className="text-surface absolute bottom-0 right-0 bg-content rounded-full cursor-pointer"
