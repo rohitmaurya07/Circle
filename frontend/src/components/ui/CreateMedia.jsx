@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { axiosInstance } from '../../lib/axios'
 import { useDispatch } from 'react-redux'
 import { getAllStories } from '../../redux/slices/storySlice'
-import { Image, Upload, VideoIcon } from 'lucide-react'
+import { Image, Pause, Play, Upload, VideoIcon, Volume, VolumeX, X } from 'lucide-react'
 
 const CreateMedia = ({ type = "post" }) => {
 
@@ -162,7 +162,7 @@ const CreateMedia = ({ type = "post" }) => {
               </div>
             </div> :
               <div>
-                  {file.type.startsWith("/video") ? 
+                  {file?.type?.startsWith("video") ? 
                   <>
                     <video src={previewUrl} ref={videoRef} onClick={() => setIsPlaying(!isPlaying)} muted={isMuted} className='w-full h-full object-cover rounded-xl' />
                     <div className='absolute bottom-2 left-2 flex gap-2 bg-black rounded-2xl p-1'>
@@ -193,7 +193,7 @@ const CreateMedia = ({ type = "post" }) => {
               <textarea id="caption" value={caption} onChange={(e)=>setCaption(e.target.value)} className='w-full p-2 rounded-xl bg-gray-800/50 border border-gray-600 text-white focus:outline-none focus:border-purple-500' />
             </div>)}
             {uploading && (
-              <div className='flex items-center gap-2'>
+              <div className='flex items-center gap-2 bg-red-800'>
                 <div className='w-full bg-gray-800 rounded-full h-2.5'>
                   <div className='bg-purple-600 h-2.5 rounded-full' style={{width: `${progress}%`}}></div>
                 </div>

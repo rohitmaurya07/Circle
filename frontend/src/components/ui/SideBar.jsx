@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Home,
   LogOut,
@@ -12,10 +12,14 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 import { logoutUser } from "../../redux/slices/userSlice";
+import { Modal } from "./Modal";
+import CreateMedia from "./CreateMedia";
 
 const SideBar = () => {
   const { user: currentUser } = useSelector((state) => state.user);
   const dispatch = useDispatch();
+
+  const [showUploadModal, setshowUploadModal] = useState(false)
 
   const navItems = [
     { name: "Home", icon: <Home size={22} />, link: "/" },
@@ -23,7 +27,7 @@ const SideBar = () => {
     { name: "Reels", icon: <MonitorPlay size={22} />, link: "/reels" },
     { name: "Message", icon: <MessageCircle size={22} />, link: "/chats" },
     { name: "Notifications", icon: <Bell size={22} />, link: "/notifications" },
-    { name: "Upload", icon: <PlusSquare size={22} />, link: "/upload" },
+    // { name: "Upload", icon: <PlusSquare size={22} />, link: "/upload" },
     { name: "Profile", icon: <User size={22} />, link: `/profile/${currentUser?._id}` },
   ];
 
@@ -46,6 +50,20 @@ const SideBar = () => {
             </span>
           </NavLink>
         ))}
+        <button
+            onClick={()=>setshowUploadModal(true)}
+            key="upload"
+            
+            className={`flex items-center gap-3 p-2 rounded-2xl transition-all duration-300 hover:bg-gray-100`}
+          >
+            <PlusSquare size={22} />
+            <span className="hidden md:inline font-medium">
+              Upload
+            </span>
+          </button>
+            <Modal open={showUploadModal} onOpenChange={setshowUploadModal}>
+              <CreateMedia type="post" />
+            </Modal>
       </nav>
 
       {/* Logout at bottom */}
