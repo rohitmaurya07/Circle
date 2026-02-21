@@ -18,6 +18,8 @@ import { useDispatch, useSelector } from "react-redux";
 import CreateMedia from "./CreateMedia";
 import { Modal } from "./Modal";
 import { getAllStories } from "../../redux/slices/storySlice";
+import axios from "axios";
+
 
 const Story = () => {
   const dispatch = useDispatch()
@@ -35,6 +37,7 @@ const Story = () => {
   const [progressBar, setProgressBar] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
   const [showCommentModel, setshowCommentModel] = useState(false)
+  const [showStoryViewers, setshowStoryViewers] = useState(false)
 
   const currentUserStories = stories[currentUserIndex]?.stories || [];
   const currentStory = currentUserStories[currentStoryIndex];
@@ -55,6 +58,7 @@ const Story = () => {
  
   // Navigation
   const handleNextStory = useCallback(() => {
+    console.log("kjhg");
     if (isLastStoryOfLastUser) {
       setShowStoryModal(false);
       return;
@@ -131,8 +135,10 @@ const Story = () => {
 
           if (next >= 100) {
             clearInterval(progressIntervalRef.current);
+            progressIntervalRef.current = null;
             handleNextStory();
             return 100;
+            
           }
 
           return next;
@@ -148,7 +154,7 @@ const Story = () => {
       if (!video) return;
 
       video.muted = isMuted;
-
+      
       if (isPlaying) {
         video.play().catch(() => { });
       } else {
@@ -159,6 +165,18 @@ const Story = () => {
     return () => clearInterval(progressIntervalRef.current);
   }, [currentStory, isPlaying, showStoryModal, isMuted, handleNextStory]);
 
+
+// Comments Modal
+useEffect(() => {
+  if (showCommentModel || showStoryViewers) {
+    setIsPlaying(false); 
+  } else {
+    setIsPlaying(true); 
+  }
+}, [showCommentModel,showStoryViewers]);
+
+
+  
   // =============================
   // VIDEO PROGRESS TRACKING
   // =============================
@@ -185,9 +203,19 @@ const Story = () => {
     };
   }, [currentStory, handleNextStory]);
 
-  // =============================
-  // UI
-  // =============================
+  const handleViewStory = async (storyID)=>{
+    console.log(storyID);
+    try {
+      await axiosInstance.put(`/story/${storyID}/view`)
+    } catch (error) {
+      console.log(error);
+      
+    }
+    
+  }
+  const handleViewStoryModal = ()=>{
+    setshowStoryViewers(true);
+  }
   return (
     <div className="flex gap-4">
       {/* CREATE STORY */}
@@ -216,14 +244,14 @@ const Story = () => {
               setIsPlaying(true);
               setProgressBar(0);
             }}
-            className="flex flex-col items-center cursor-pointer shrink-0"
+            className="flex flex-col items-center cursor-pointer shrink-0 "
           >
             <img
               src={
-                userStories?.user?.profileImage || "/default-avatar.png"
+                userStories?.user?.profileImage || `https://placehold.co/600x400?text=${userStories?.user?.username.slice(0,1).toUpperCase()}`
               }
               alt={userStories?.user?.username}
-              className="w-14 h-14 rounded-full border-2 border-highlight object-cover"
+              className="w-15 h-15 rounded-full border-4 border-base  object-cover"
             />
             <span className="text-content text-sm">
               {userStories?.user?._id === currentUser?.id
@@ -260,7 +288,7 @@ const Story = () => {
           {/* USER DETAILS */}
           <div className="absolute top-6 left-4 flex items-center gap-3 z-20">
             <img
-              src={currentStoryUser?.profileImage || "/default-avatar.png"}
+              src={currentStoryUser?.profileImage || `https://placehold.co/600x400?text=${currentStoryUser?.username.slice(0,1).toUpperCase()}`}
               alt={currentStoryUser?.username}
               className="w-10 h-10 rounded-full border border-white/20 object-cover"
             />
@@ -279,12 +307,14 @@ const Story = () => {
             {currentStory?.mediaType === "image" ? (
               <img
                 src={currentStory?.mediaUrl}
+                onLoad={()=>handleViewStory(currentStory._id)}
                 alt=""
                 className="w-full h-full object-contain"
               />
             ) : (
               <video
                 ref={videoRef}
+                onLoadedData={()=>handleViewStory(currentStory._id)}  
                 src={currentStory?.mediaUrl}
                 className="w-full h-full object-contain"
                 playsInline
@@ -300,8 +330,11 @@ const Story = () => {
             <button onClick={handlePlayPause} className="text-white cursor-pointer hover:bg-white/20 rounded-full p-1 transition-colors">
               {isPlaying ? <Pause size={24} /> : <Play size={24} />}
             </button>
+            <button onClick={()=>handleViewStoryModal()} className="text-white cursor-pointer hover:bg-white/20 rounded-full p-1 transition-colors">
+               <Eye size={24}/>
+            </button>
 
-            {currentStory?.mediaType === "video" && (
+            {currentStory?.mediaType === "video" && ( 
               <button onClick={handleMediaVolume} className="text-white cursor-pointer hover:bg-white/20 rounded-full p-1 transition-colors">
                 {isMuted ? <VolumeOff size={24} /> : <Volume2 size={24} />}
               </button>
@@ -314,12 +347,12 @@ const Story = () => {
             <button
               onClick={handlePreviousStory}
               disabled={!canGoPrevious}
-              className="w-1/2 h-full"
+              className="w-1/2 h-full z-20"
             />
             <button
               onClick={handleNextStory}
               disabled={!canGoNext}
-              className="w-1/2 h-full"
+              className="w-1/2 h-full z-20"
             />
           </div>
 
@@ -345,29 +378,161 @@ const Story = () => {
             </div>
           </div>
 
-{/* Show All Comments */}
-          {showCommentModel && (
-            <div className="absolute bottom-1  bg-content z-60 w-full">
-                <h4 className="text-white text-2xl font-bold">Comments</h4>
-                 <div className="flex flex-col gap-2">
-                  {[10,20,30].map(()=>{
-                    return(
-                      <div className="comment border-2 border-gray-600">
-                        <img src="" alt="" srcset="" />
-                        <div>
-                          <p>username</p>
-                        <p>Hello how are u</p>
-                        </div>
-                    </div>
-                    )
-                  })}
-                 </div>
-                 <div className="flex border-2 border-white rounded-full p-2 cursor-pointer">
-                  <input type="text" placeholder="Add a Comment" className="bg-transparent border-none outline-none text-white w-[250px] px-2" />
-                  <Send size={25} className="text-white cursor-pointer" />
-                 </div>
+
+          {/* VIEWERS PANEL */}
+{showStoryViewers && (
+  <div className="absolute inset-0 z-50 flex items-end bg-black/60 backdrop-blur-sm">
+
+    {/* CONTAINER */}
+    <div className="w-full h-[75%] bg-[#0f0f0f] rounded-t-3xl flex flex-col animate-slideUp">
+
+      {/* HEADER */}
+      <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
+
+        <div>
+          <h3 className="text-white text-lg font-semibold">
+            Viewers
+          </h3>
+          <p className="text-white/50 text-xs">
+            {currentStory?.viewers.length || "0"} people viewed
+          </p>
+        </div>
+
+        <button
+          onClick={() => setshowStoryViewers(false)}
+          className="hover:bg-white/10 p-2 rounded-full transition"
+        >
+          <X size={22} className="text-white" />
+        </button>
+      </div>
+
+      {/* VIEWERS LIST */}
+      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 no-scrollbar">
+
+        {[1,2,3,4,5,6].map((viewer) => (
+          <div
+            key={viewer}
+            className="flex items-center justify-between group"
+          >
+            <div className="flex items-center gap-3">
+
+              {/* Avatar */}
+              <img
+                src="https://randomuser.me/api/portraits/men/32.jpg"
+                className="w-11 h-11 rounded-full object-cover"
+              />
+
+              {/* USER INFO */}
+              <div>
+                <p className="text-white text-sm font-semibold">
+                  username
+                </p>
+                <p className="text-white/50 text-xs">
+                  Viewed 2m ago
+                </p>
+              </div>
             </div>
-          )}
+
+            {/* FOLLOW BUTTON */}
+            <button className="text-xs px-4 py-1 rounded-full bg-white text-black font-medium hover:scale-105 transition">
+              Follow
+            </button>
+          </div>
+        ))}
+
+      </div>
+
+    </div>
+  </div>
+)}
+
+
+          {/* COMMENTS PANEL */}
+{showCommentModel && (
+  <div className="absolute inset-0 z-50 flex items-end bg-black/60 backdrop-blur-sm" onClick={()=>setIsPlaying(false)}>
+
+    {/* COMMENT CONTAINER */}
+    <div className="w-full h-[75%] bg-[#0f0f0f] rounded-t-3xl flex flex-col animate-slideUp">
+
+      {/* HEADER */}
+      <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
+        <h3 className="text-white text-lg font-semibold">
+          Comments
+        </h3>
+
+        <button
+          onClick={() => {
+            setshowCommentModel(false);
+            setIsPlaying(true);
+          }}
+          className="hover:bg-white/10 p-2 rounded-full transition"
+        >
+          <X size={22} className="text-white" />
+        </button>
+      </div>
+
+      {/* COMMENTS LIST */}
+      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5 no-scrollbar">
+
+        {currentStory?.comments?.map((item) => (
+          <div key={item} className="flex gap-3 group">
+
+            {/* Avatar */}
+            <img
+              src="https://randomuser.me/api/portraits/men/32.jpg"
+              className="w-9 h-9 rounded-full object-cover"
+            />
+
+            {/* COMMENT BODY */}
+            <div className="flex-1">
+
+              <div className="bg-white/5 px-3 py-2 rounded-2xl">
+                <p className="text-sm font-semibold text-white">
+                  username
+                </p>
+
+                <p className="text-sm text-white/90">
+                  This story looks amazing 🔥
+                </p>
+              </div>
+
+              {/* META */}
+              <div className="flex gap-4 text-xs text-white/50 mt-1 px-2">
+                <span>2h</span>
+                <button className="hover:text-white">
+                  Reply
+                </button>
+              </div>
+            </div>
+
+            {/* LIKE ICON */}
+            <button className="opacity-0 group-hover:opacity-100 transition">
+              <Heart size={16} className="text-white/70" />
+            </button>
+          </div>
+        ))}
+
+      </div>
+
+      {/* INPUT AREA */}
+      <div className="border-t border-white/10 p-3">
+        <div className="flex items-center gap-3 bg-white/5 rounded-full px-4 py-2 focus-within:ring-1 focus-within:ring-white/30">
+
+          <input
+            type="text"
+            placeholder="Add a comment..."
+            className="flex-1 bg-transparent outline-none text-white text-sm placeholder:text-white/40"
+          />
+
+          <button className="hover:scale-110 transition">
+            <Send size={20} className="text-white" />
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+)}
 
         </div>
       </Modal>
