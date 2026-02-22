@@ -77,6 +77,8 @@ export const getCurrentUser = (userData, navigate) => async (dispatch) => {
     dispatch(setLoading(true))
     try {
         const { data } = await axiosInstance.get('/user/profile')
+        console.log(data);
+        
         if (data.success) {
             dispatch(setUser(data?.user))
         }

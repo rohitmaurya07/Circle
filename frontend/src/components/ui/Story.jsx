@@ -19,12 +19,16 @@ import CreateMedia from "./CreateMedia";
 import { Modal } from "./Modal";
 import { getAllStories } from "../../redux/slices/storySlice";
 import axios from "axios";
+import ProfileImage from "../ProfileImage";
 
 
 const Story = () => {
   const dispatch = useDispatch()
   const {stories} = useSelector((state) => state.story)
   const { user: currentUser } = useSelector((state) => state.user);
+
+  // console.log("currentUser",currentUser);
+  
 
   const videoRef = useRef(null);
   const progressIntervalRef = useRef(null);
@@ -38,7 +42,7 @@ const Story = () => {
   const [isMuted, setIsMuted] = useState(false);
   const [showCommentModel, setshowCommentModel] = useState(false)
   const [showStoryViewers, setshowStoryViewers] = useState(false)
-
+const [addComment, setaddComment] = useState("")
   const currentUserStories = stories[currentUserIndex]?.stories || [];
   const currentStory = currentUserStories[currentStoryIndex];
   const currentStoryUser = stories[currentUserIndex]?.user;
@@ -216,6 +220,26 @@ useEffect(() => {
   const handleViewStoryModal = ()=>{
     setshowStoryViewers(true);
   }
+
+  const addCommentToStory = async (storyID)=>{
+    try {
+      console.log("Comment",addComment);
+      
+      console.log("Story ID",storyID);
+      
+      const {data} = await axiosInstance.post(`/story/${storyID}/comment`,{text:addComment})
+      if (data?.success) {
+        console.log("Comment Added");
+        setaddComment("")
+        setshowCommentModel(false)
+      }
+    } catch (error) {
+      console.log("Error Commenting on Story",error);
+      
+    }
+    // setshowCommentModel(false);
+  }
+
   return (
     <div className="flex gap-4">
       {/* CREATE STORY */}
@@ -254,7 +278,7 @@ useEffect(() => {
               className="w-15 h-15 rounded-full border-4 border-base  object-cover"
             />
             <span className="text-content text-sm">
-              {userStories?.user?._id === currentUser?.id
+              {userStories?.user?._id === currentUser?._id
                 ? "Your Story"
                 : userStories?.user?.username}
             </span>
@@ -287,11 +311,12 @@ useEffect(() => {
 
           {/* USER DETAILS */}
           <div className="absolute top-6 left-4 flex items-center gap-3 z-20">
-            <img
+            {/* <img
               src={currentStoryUser?.profileImage || `https://placehold.co/600x400?text=${currentStoryUser?.username.slice(0,1).toUpperCase()}`}
               alt={currentStoryUser?.username}
               className="w-10 h-10 rounded-full border border-white/20 object-cover"
-            />
+            /> */}
+            <ProfileImage user={currentStoryUser}  className="w-10 h-10 rounded-full border border-white/20 object-cover" />
             <div className="flex gap-2 items-center">
               <span className="text-white font-semibold text-sm drop-shadow-md">
                 {currentStoryUser?.username}
@@ -409,7 +434,7 @@ useEffect(() => {
       {/* VIEWERS LIST */}
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 no-scrollbar">
 
-        {[1,2,3,4,5,6].map((viewer) => (
+        {currentStory?.viewers?.map((viewer) => (
           <div
             key={viewer}
             className="flex items-center justify-between group"
@@ -417,15 +442,15 @@ useEffect(() => {
             <div className="flex items-center gap-3">
 
               {/* Avatar */}
-              <img
-                src="https://randomuser.me/api/portraits/men/32.jpg"
+              {/* <img
+                src={viewer?.profileImage || `https://placehold.co/600x400?text=${viewer?.username.slice(0,1).toUpperCase()}`}
                 className="w-11 h-11 rounded-full object-cover"
-              />
-
+              /> */}
+              <ProfileImage user={viewer} className="w-11 h-11 rounded-full object-cover" />
               {/* USER INFO */}
               <div>
                 <p className="text-white text-sm font-semibold">
-                  username
+                  {viewer?.username}
                 </p>
                 <p className="text-white/50 text-xs">
                   Viewed 2m ago
@@ -474,25 +499,27 @@ useEffect(() => {
       {/* COMMENTS LIST */}
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5 no-scrollbar">
 
-        {currentStory?.comments?.map((item) => (
-          <div key={item} className="flex gap-3 group">
+        {currentStory?.comments?.map((comment) => (
+          
+          <div key={comment?.id} className="flex gap-3 group">
 
             {/* Avatar */}
-            <img
+            {/* <img
               src="https://randomuser.me/api/portraits/men/32.jpg"
               className="w-9 h-9 rounded-full object-cover"
-            />
+            /> */}
+            <ProfileImage user={comment?.user} className="w-9 h-9 rounded-full object-cover" />
 
             {/* COMMENT BODY */}
             <div className="flex-1">
 
               <div className="bg-white/5 px-3 py-2 rounded-2xl">
                 <p className="text-sm font-semibold text-white">
-                  username
+                  {comment?.user?.username || "Unknown"}
                 </p>
 
                 <p className="text-sm text-white/90">
-                  This story looks amazing 🔥
+                  {comment?.text || "Nice Buddy"}
                 </p>
               </div>
 
@@ -519,13 +546,15 @@ useEffect(() => {
         <div className="flex items-center gap-3 bg-white/5 rounded-full px-4 py-2 focus-within:ring-1 focus-within:ring-white/30">
 
           <input
+            onChange={(e)=>{setaddComment(e.target.value)}}
+            value={addComment}
             type="text"
             placeholder="Add a comment..."
             className="flex-1 bg-transparent outline-none text-white text-sm placeholder:text-white/40"
           />
 
           <button className="hover:scale-110 transition">
-            <Send size={20} className="text-white" />
+            <Send onClick={()=>addCommentToStory(currentStory?._id)} size={20} className="text-white" />
           </button>
         </div>
       </div>
