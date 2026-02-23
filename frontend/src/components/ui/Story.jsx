@@ -237,7 +237,7 @@ useEffect(() => {
       console.log("Error Commenting on Story",error);
       
     }
-    // setshowCommentModel(false);
+    setshowCommentModel(false);
   }
 
   return (
