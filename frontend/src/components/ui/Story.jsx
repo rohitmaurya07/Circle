@@ -20,6 +20,8 @@ import { Modal } from "./Modal";
 import { getAllStories } from "../../redux/slices/storySlice";
 import axios from "axios";
 import ProfileImage from "../ProfileImage";
+import Comments from "../Comments";
+import { timeAgo } from "../../lib/timeAgo";
 
 
 const Story = () => {
@@ -105,21 +107,7 @@ const [addComment, setaddComment] = useState("")
     setIsMuted((prev) => !prev);
   };
 
-  // HELPER
-  const formatTimeAgo = (timestamp) => {
-    if (!timestamp) return null;
-    const now = new Date();
-    const diff = now - new Date(timestamp);
-    const seconds = Math.floor(diff / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
-
-    if (days > 0) return `${days}d`;
-    if (hours > 0) return `${hours}h`;
-    if (minutes > 0) return `${minutes}m`;
-    return "Just now";
-  };
+ 
 
   // STORY PROGRESS CONTROLLER
   useEffect(() => {
@@ -237,7 +225,7 @@ useEffect(() => {
       console.log("Error Commenting on Story",error);
       
     }
-    setshowCommentModel(false);
+    
   }
 
   return (
@@ -322,7 +310,7 @@ useEffect(() => {
                 {currentStoryUser?.username}
               </span>
               <span className="text-white/70 text-xs font-medium drop-shadow-md">
-                {formatTimeAgo(currentStory?.createdAt)}
+                {timeAgo(currentStory?.createdAt)}
               </span>
             </div>
           </div>
@@ -497,48 +485,8 @@ useEffect(() => {
       </div>
 
       {/* COMMENTS LIST */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5 no-scrollbar">
-
-        {currentStory?.comments?.map((comment) => (
-          
-          <div key={comment?.id} className="flex gap-3 group">
-
-            {/* Avatar */}
-            {/* <img
-              src="https://randomuser.me/api/portraits/men/32.jpg"
-              className="w-9 h-9 rounded-full object-cover"
-            /> */}
-            <ProfileImage user={comment?.user} className="w-9 h-9 rounded-full object-cover" />
-
-            {/* COMMENT BODY */}
-            <div className="flex-1">
-
-              <div className="bg-white/5 px-3 py-2 rounded-2xl">
-                <p className="text-sm font-semibold text-white">
-                  {comment?.user?.username || "Unknown"}
-                </p>
-
-                <p className="text-sm text-white/90">
-                  {comment?.text || "Nice Buddy"}
-                </p>
-              </div>
-
-              {/* META */}
-              <div className="flex gap-4 text-xs text-white/50 mt-1 px-2">
-                <span>2h</span>
-                <button className="hover:text-white">
-                  Reply
-                </button>
-              </div>
-            </div>
-
-            {/* LIKE ICON */}
-            <button className="opacity-0 group-hover:opacity-100 transition">
-              <Heart size={16} className="text-white/70" />
-            </button>
-          </div>
-        ))}
-
+        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5 no-scrollbar">
+      <Comments comments={currentStory?.comments}/>
       </div>
 
       {/* INPUT AREA */}
