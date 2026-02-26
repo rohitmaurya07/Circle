@@ -3,9 +3,7 @@ import ProfileImage from './ProfileImage'
 import { Heart } from 'lucide-react'
 import { timeAgo } from '../lib/timeAgo';
 
-const Comments = ({comments}) => {
-    console.log(comments[0].createdAt);
-    
+const Comments = ({comments}) => {    
   return (
     <div>
 

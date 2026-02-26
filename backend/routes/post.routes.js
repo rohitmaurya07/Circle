@@ -8,7 +8,7 @@ router.post("/create",
     authMiddleware,uploadCloudinary.single("media"),
     createPost
 )
-router.get("/getallposts",authMiddleware, getAllPosts)
+router.get("/all",authMiddleware, getAllPosts)
 router.get("/:id",authMiddleware, getPostById)
 router.delete("/:id",authMiddleware, deleteById)
 router.put("/:id/like",authMiddleware,togglePost)
