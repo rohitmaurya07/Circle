@@ -22,15 +22,16 @@ import axios from "axios";
 import ProfileImage from "../ProfileImage";
 import Comments from "../Comments";
 import { timeAgo } from "../../lib/timeAgo";
+import CommentInput from "../CommentInput";
 
 
 const Story = () => {
   const dispatch = useDispatch()
-  const {stories} = useSelector((state) => state.story)
+  const { stories } = useSelector((state) => state.story)
   const { user: currentUser } = useSelector((state) => state.user);
 
   // console.log("currentUser",currentUser);
-  
+
 
   const videoRef = useRef(null);
   const progressIntervalRef = useRef(null);
@@ -44,10 +45,16 @@ const Story = () => {
   const [isMuted, setIsMuted] = useState(false);
   const [showCommentModel, setshowCommentModel] = useState(false)
   const [showStoryViewers, setshowStoryViewers] = useState(false)
-const [addComment, setaddComment] = useState("")
   const currentUserStories = stories[currentUserIndex]?.stories || [];
   const currentStory = currentUserStories[currentStoryIndex];
   const currentStoryUser = stories[currentUserIndex]?.user;
+
+  // Local state for instant story comment updates
+  const [localStoryComments, setLocalStoryComments] = useState([]);
+
+  useEffect(() => {
+    setLocalStoryComments(currentStory?.comments || []);
+  }, [currentStory?.comments]);
 
   const isLastStoryOfLastUser =
     currentUserIndex === stories.length - 1 &&
@@ -61,7 +68,7 @@ const [addComment, setaddComment] = useState("")
     dispatch(getAllStories())
   }, [dispatch]);
 
- 
+
   // Navigation
   const handleNextStory = useCallback(() => {
     console.log("kjhg");
@@ -107,7 +114,7 @@ const [addComment, setaddComment] = useState("")
     setIsMuted((prev) => !prev);
   };
 
- 
+
 
   // STORY PROGRESS CONTROLLER
   useEffect(() => {
@@ -130,7 +137,7 @@ const [addComment, setaddComment] = useState("")
             progressIntervalRef.current = null;
             handleNextStory();
             return 100;
-            
+
           }
 
           return next;
@@ -146,7 +153,7 @@ const [addComment, setaddComment] = useState("")
       if (!video) return;
 
       video.muted = isMuted;
-      
+
       if (isPlaying) {
         video.play().catch(() => { });
       } else {
@@ -158,17 +165,17 @@ const [addComment, setaddComment] = useState("")
   }, [currentStory, isPlaying, showStoryModal, isMuted, handleNextStory]);
 
 
-// Comments Modal
-useEffect(() => {
-  if (showCommentModel || showStoryViewers) {
-    setIsPlaying(false); 
-  } else {
-    setIsPlaying(true); 
-  }
-}, [showCommentModel,showStoryViewers]);
+  // Comments Modal
+  useEffect(() => {
+    if (showCommentModel || showStoryViewers) {
+      setIsPlaying(false);
+    } else {
+      setIsPlaying(true);
+    }
+  }, [showCommentModel, showStoryViewers]);
 
 
-  
+
   // =============================
   // VIDEO PROGRESS TRACKING
   // =============================
@@ -195,47 +202,30 @@ useEffect(() => {
     };
   }, [currentStory, handleNextStory]);
 
-  const handleViewStory = async (storyID)=>{
+  const handleViewStory = async (storyID) => {
     console.log(storyID);
     try {
       await axiosInstance.put(`/story/${storyID}/view`)
     } catch (error) {
       console.log(error);
-      
+
     }
-    
+
   }
-  const handleViewStoryModal = ()=>{
+  const handleViewStoryModal = () => {
     setshowStoryViewers(true);
   }
 
-  const addCommentToStory = async (storyID)=>{
-    try {
-      console.log("Comment",addComment);
-      
-      console.log("Story ID",storyID);
-      
-      const {data} = await axiosInstance.post(`/story/${storyID}/comment`,{text:addComment})
-      if (data?.success) {
-        console.log("Comment Added");
-        setaddComment("")
-        setshowCommentModel(false)
-      }
-    } catch (error) {
-      console.log("Error Commenting on Story",error);
-      
-    }
-    
-  }
+
 
   return (
     <div className="flex gap-4">
       {/* CREATE STORY */}
       <div>
         <div className="bg-content h-15 w-15 rounded-full border-4 border-base relative">
-            <Modal open={isCreateStoryModal} onOpenChange={setIsCreateStoryModal}>
-              <CreateMedia type="story" />
-            </Modal>
+          <Modal open={isCreateStoryModal} onOpenChange={setIsCreateStoryModal}>
+            <CreateMedia type="story" />
+          </Modal>
           <PlusCircle
             onClick={() => setIsCreateStoryModal(true)}
             className="text-surface absolute bottom-0 right-0 bg-content rounded-full cursor-pointer"
@@ -260,7 +250,7 @@ useEffect(() => {
           >
             <img
               src={
-                userStories?.user?.profileImage || `https://placehold.co/600x400?text=${userStories?.user?.username.slice(0,1).toUpperCase()}`
+                userStories?.user?.profileImage || `https://placehold.co/600x400?text=${userStories?.user?.username.slice(0, 1).toUpperCase()}`
               }
               alt={userStories?.user?.username}
               className="w-15 h-15 rounded-full border-4 border-base  object-cover"
@@ -304,7 +294,7 @@ useEffect(() => {
               alt={currentStoryUser?.username}
               className="w-10 h-10 rounded-full border border-white/20 object-cover"
             /> */}
-            <ProfileImage user={currentStoryUser}  className="w-10 h-10 rounded-full border border-white/20 object-cover" />
+            <ProfileImage user={currentStoryUser} className="w-10 h-10 rounded-full border border-white/20 object-cover" />
             <div className="flex gap-2 items-center">
               <span className="text-white font-semibold text-sm drop-shadow-md">
                 {currentStoryUser?.username}
@@ -320,14 +310,14 @@ useEffect(() => {
             {currentStory?.mediaType === "image" ? (
               <img
                 src={currentStory?.mediaUrl}
-                onLoad={()=>handleViewStory(currentStory._id)}
+                onLoad={() => handleViewStory(currentStory._id)}
                 alt=""
                 className="w-full h-full object-contain"
               />
             ) : (
               <video
                 ref={videoRef}
-                onLoadedData={()=>handleViewStory(currentStory._id)}  
+                onLoadedData={() => handleViewStory(currentStory._id)}
                 src={currentStory?.mediaUrl}
                 className="w-full h-full object-contain"
                 playsInline
@@ -343,11 +333,11 @@ useEffect(() => {
             <button onClick={handlePlayPause} className="text-white cursor-pointer hover:bg-white/20 rounded-full p-1 transition-colors">
               {isPlaying ? <Pause size={24} /> : <Play size={24} />}
             </button>
-            <button onClick={()=>handleViewStoryModal()} className="text-white cursor-pointer hover:bg-white/20 rounded-full p-1 transition-colors">
-               <Eye size={24}/>
+            <button onClick={() => handleViewStoryModal()} className="text-white cursor-pointer hover:bg-white/20 rounded-full p-1 transition-colors">
+              <Eye size={24} />
             </button>
 
-            {currentStory?.mediaType === "video" && ( 
+            {currentStory?.mediaType === "video" && (
               <button onClick={handleMediaVolume} className="text-white cursor-pointer hover:bg-white/20 rounded-full p-1 transition-colors">
                 {isMuted ? <VolumeOff size={24} /> : <Volume2 size={24} />}
               </button>
@@ -383,7 +373,7 @@ useEffect(() => {
           <div className="flex justify-between items-center absolute bottom-0 left-0 right-0 p-4 z-20 bg-linear-to-t from-black/80 to-transparent pt-10">
             <div className="flex gap-4 cursor-pointer">
               <Heart size={25} className="text-white relative z-20" />
-              <MessageCircle onClick={()=>setshowCommentModel(true)} size={25} className="text-white" />
+              <MessageCircle onClick={() => setshowCommentModel(true)} size={25} className="text-white" />
             </div>
             <div className="flex border-2 border-white rounded-full p-2 cursor-pointer">
               <input type="text" placeholder="Send a message" className="bg-transparent border-none outline-none text-white w-[250px] px-2" />
@@ -393,123 +383,108 @@ useEffect(() => {
 
 
           {/* VIEWERS PANEL */}
-{showStoryViewers && (
-  <div className="absolute inset-0 z-50 flex items-end bg-black/60 backdrop-blur-sm">
+          {showStoryViewers && (
+            <div className="absolute inset-0 z-50 flex items-end bg-black/60 backdrop-blur-sm">
 
-    {/* CONTAINER */}
-    <div className="w-full h-[75%] bg-[#0f0f0f] rounded-t-3xl flex flex-col animate-slideUp">
+              {/* CONTAINER */}
+              <div className="w-full h-[75%] bg-[#0f0f0f] rounded-t-3xl flex flex-col animate-slideUp">
 
-      {/* HEADER */}
-      <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
+                {/* HEADER */}
+                <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
 
-        <div>
-          <h3 className="text-white text-lg font-semibold">
-            Viewers
-          </h3>
-          <p className="text-white/50 text-xs">
-            {currentStory?.viewers.length || "0"} people viewed
-          </p>
-        </div>
+                  <div>
+                    <h3 className="text-white text-lg font-semibold">
+                      Viewers
+                    </h3>
+                    <p className="text-white/50 text-xs">
+                      {currentStory?.viewers.length || "0"} people viewed
+                    </p>
+                  </div>
 
-        <button
-          onClick={() => setshowStoryViewers(false)}
-          className="hover:bg-white/10 p-2 rounded-full transition"
-        >
-          <X size={22} className="text-white" />
-        </button>
-      </div>
+                  <button
+                    onClick={() => setshowStoryViewers(false)}
+                    className="hover:bg-white/10 p-2 rounded-full transition"
+                  >
+                    <X size={22} className="text-white" />
+                  </button>
+                </div>
 
-      {/* VIEWERS LIST */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 no-scrollbar">
+                {/* VIEWERS LIST */}
+                <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 no-scrollbar">
 
-        {currentStory?.viewers?.map((viewer) => (
-          <div
-            key={viewer}
-            className="flex items-center justify-between group"
-          >
-            <div className="flex items-center gap-3">
+                  {currentStory?.viewers?.map((viewer) => (
+                    <div
+                      key={viewer}
+                      className="flex items-center justify-between group"
+                    >
+                      <div className="flex items-center gap-3">
 
-              {/* Avatar */}
-              {/* <img
+                        {/* Avatar */}
+                        {/* <img
                 src={viewer?.profileImage || `https://placehold.co/600x400?text=${viewer?.username.slice(0,1).toUpperCase()}`}
                 className="w-11 h-11 rounded-full object-cover"
               /> */}
-              <ProfileImage user={viewer} className="w-11 h-11 rounded-full object-cover" />
-              {/* USER INFO */}
-              <div>
-                <p className="text-white text-sm font-semibold">
-                  {viewer?.username}
-                </p>
-                <p className="text-white/50 text-xs">
-                  Viewed 2m ago
-                </p>
+                        <ProfileImage user={viewer} className="w-11 h-11 rounded-full object-cover" />
+                        {/* USER INFO */}
+                        <div>
+                          <p className="text-white text-sm font-semibold">
+                            {viewer?.username}
+                          </p>
+                          <p className="text-white/50 text-xs">
+                            Viewed 2m ago
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* FOLLOW BUTTON */}
+                      <button className="text-xs px-4 py-1 rounded-full bg-white text-black font-medium hover:scale-105 transition">
+                        Follow
+                      </button>
+                    </div>
+                  ))}
+
+                </div>
+
               </div>
             </div>
-
-            {/* FOLLOW BUTTON */}
-            <button className="text-xs px-4 py-1 rounded-full bg-white text-black font-medium hover:scale-105 transition">
-              Follow
-            </button>
-          </div>
-        ))}
-
-      </div>
-
-    </div>
-  </div>
-)}
+          )}
 
 
           {/* COMMENTS PANEL */}
-{showCommentModel && (
-  <div className="absolute inset-0 z-50 flex items-end bg-black/60 backdrop-blur-sm" onClick={()=>setIsPlaying(false)}>
+          {showCommentModel && (
+            <div className="absolute inset-0 z-50 flex items-end bg-black/60 backdrop-blur-sm" onClick={() => setIsPlaying(false)}>
 
-    {/* COMMENT CONTAINER */}
-    <div className="w-full h-[75%] bg-[#0f0f0f] rounded-t-3xl flex flex-col animate-slideUp">
+              {/* COMMENT CONTAINER */}
+              <div className="w-full h-[75%] bg-[#0f0f0f] rounded-t-3xl flex flex-col animate-slideUp">
 
-      {/* HEADER */}
-      <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
-        <h3 className="text-white text-lg font-semibold">
-          Comments
-        </h3>
+                {/* HEADER */}
+                <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
+                  <h3 className="text-white text-lg font-semibold">
+                    Comments
+                  </h3>
 
-        <button
-          onClick={() => {
-            setshowCommentModel(false);
-            setIsPlaying(true);
-          }}
-          className="hover:bg-white/10 p-2 rounded-full transition"
-        >
-          <X size={22} className="text-white" />
-        </button>
-      </div>
+                  <button
+                    onClick={() => {
+                      setshowCommentModel(false);
+                      setIsPlaying(true);
+                    }}
+                    className="hover:bg-white/10 p-2 rounded-full transition"
+                  >
+                    <X size={22} className="text-white" />
+                  </button>
+                </div>
 
-      {/* COMMENTS LIST */}
-        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5 no-scrollbar">
-      <Comments comments={currentStory?.comments}/>
-      </div>
+                {/* COMMENTS LIST */}
+                <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5 no-scrollbar">
+                  <Comments comments={localStoryComments} />
+                </div>
 
-      {/* INPUT AREA */}
-      <div className="border-t border-white/10 p-3">
-        <div className="flex items-center gap-3 bg-white/5 rounded-full px-4 py-2 focus-within:ring-1 focus-within:ring-white/30">
+                {/* INPUT AREA */}
+                <CommentInput type="story" itemID={currentStory?._id} onCommentAdd={(newComments) => setLocalStoryComments(newComments)} />
 
-          <input
-            onChange={(e)=>{setaddComment(e.target.value)}}
-            value={addComment}
-            type="text"
-            placeholder="Add a comment..."
-            className="flex-1 bg-transparent outline-none text-white text-sm placeholder:text-white/40"
-          />
-
-          <button className="hover:scale-110 transition">
-            <Send onClick={()=>addCommentToStory(currentStory?._id)} size={20} className="text-white" />
-          </button>
-        </div>
-      </div>
-
-    </div>
-  </div>
-)}
+              </div>
+            </div>
+          )}
 
         </div>
       </Modal>

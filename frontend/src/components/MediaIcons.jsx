@@ -1,22 +1,29 @@
 import { Bookmark, Heart, MessageCircle, Send } from 'lucide-react'
 import React from 'react'
 import LikeButton from './LikeButton';
+import Comments from './Comments';
+import { Modal } from './ui/Modal';
 
-const MediaIcons = ({post}) => {
-    console.log("icons",post);
-    
+const MediaIcons = ({post,setshowCommentModel, showCommentModel}) => {
   return (
     <div>
         <div className="flex justify-between items-center px-4 py-3">
         <div className="flex gap-4">
           <Heart className="cursor-pointer hover:scale-110 transition" />
-          <MessageCircle className="cursor-pointer hover:scale-110 transition" />
+          <MessageCircle onClick={()=>setshowCommentModel(true)} className="cursor-pointer hover:scale-110 transition" />
           <Send className="cursor-pointer hover:scale-110 transition" />
         </div>
         <Bookmark className="cursor-pointer hover:scale-110 transition" />
       </div>
 
       <LikeButton post={post} />
+
+      {/* Comment Model */}
+            {showCommentModel && <div className="">
+              <Modal open={showCommentModel} onOpenChange={setshowCommentModel}>
+              <Comments comments={post?.comment} />
+            </Modal>
+            </div>}
 
       {/* Date */}
       <p className="px-4 pb-4 text-xs text-gray-400 uppercase tracking-wide">

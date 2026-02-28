@@ -3,17 +3,17 @@ import User from "../models/user.model.js";
 
 
 // Creating Post
-export const createPost = async (req,res)=>{
+export const createPost = async (req, res) => {
     try {
-        const {caption,mediaType} = req.body;
+        const { caption, mediaType } = req.body;
         const userId = req.user._id;
-        if (!req.file || !req.file.path ) {
+        if (!req.file || !req.file.path) {
             return res.status(400).json({
                 success: false,
                 message: "Image Not Uploaded"
             })
         }
-    
+
         const mediaUrl = req.file.path;
         const post = await Post.create({
             user: userId,
@@ -42,20 +42,20 @@ export const createPost = async (req,res)=>{
 }
 
 // Getting All Posts
-export const getAllPosts = async (req,res)=>{
+export const getAllPosts = async (req, res) => {
     try {
-        
+
         const posts = await Post.find()
-        .populate("user","username profileImage")
-        .populate("comment.user","username profileImage")
-        .sort({createdAt: -1});
-        
+            .populate("user", "username profileImage")
+            .populate("comment.user", "username profileImage")
+            .sort({ createdAt: -1 });
+
 
         return res.status(200).json({
             success: true,
             posts,
             message: "Fetched All Posts SuccessFully"
-        })        
+        })
     } catch (error) {
         return res.status(500).json({
             success: false,
@@ -65,23 +65,23 @@ export const getAllPosts = async (req,res)=>{
 }
 
 // Getting Post by Id
-export const getPostById = async (req,res)=>{
+export const getPostById = async (req, res) => {
     try {
-        
+
         const post = await Post.findById(req.params.id)
-        .populate("user","username profileImage")
-        .populate("comment.user","username profileImage")
+            .populate("user", "username profileImage")
+            .populate("comment.user", "username profileImage")
         if (!post) {
             return res.status(400).json({
-            success: false,
-            message: "Post Not Found By Id"
-        }) 
+                success: false,
+                message: "Post Not Found By Id"
+            })
         }
         return res.status(200).json({
             success: true,
             post,
             message: "Fetched Post SuccessFully"
-        })        
+        })
     } catch (error) {
         return res.status(500).json({
             success: false,
@@ -91,22 +91,22 @@ export const getPostById = async (req,res)=>{
 }
 
 // Deleting Post by Id
-export const deleteById = async (req,res)=>{
+export const deleteById = async (req, res) => {
     try {
         const userId = req.user._id
         const post = await Post.findById(req.params.id)
         if (!post || post.user.toString() !== userId.toString()) {
             return res.status(400).json({
-            success: false,
-            message: "Post Not Found or unauthorized user"
-        }) 
+                success: false,
+                message: "Post Not Found or unauthorized user"
+            })
         }
-        await post.deleteOne() 
+        await post.deleteOne()
         return res.status(200).json({
             success: true,
             post,
             message: "Post deleted SuccessFully"
-        })        
+        })
     } catch (error) {
         return res.status(500).json({
             success: false,
@@ -116,21 +116,21 @@ export const deleteById = async (req,res)=>{
 }
 
 // Like , Unlike Toggle
-export const togglePost = async (req,res) =>{
+export const togglePost = async (req, res) => {
     try {
         const userId = req.user._id
         const post = await Post.findById(req.params.id)
         if (!post) {
             return res.status(500).json({
-            success: false,
-            message: "Post Not found"
-        })
+                success: false,
+                message: "Post Not found"
+            })
         }
         const index = post.likes.indexOf(userId)
         if (index === -1) {
             post.likes.push(userId)
-        }else{
-            post.likes.splice(index,1)
+        } else {
+            post.likes.splice(index, 1)
         }
 
         await post.save()
@@ -148,19 +148,19 @@ export const togglePost = async (req,res) =>{
 }
 
 // Commenting Post
-export const comment = async (req,res)=>{
+export const comment = async (req, res) => {
     try {
-        
-        const {text} = req.body
+
+        const { text } = req.body
         const userId = req.user._id
-        
+
         const post = await Post.findById(req.params.id)
-        
+
         if (!post) {
             return res.status(500).json({
-            success: false,
-            message: "Post Not found"
-        })
+                success: false,
+                message: "Post Not found"
+            })
         }
 
         const comment = {
@@ -169,7 +169,7 @@ export const comment = async (req,res)=>{
             createdAt: new Date()
         }
         post.comment.push(comment)
-        
+
         await post.save()
 
         const updatePost = await Post.findById(post._id).populate(
@@ -179,7 +179,7 @@ export const comment = async (req,res)=>{
         return res.status(200).json({
             success: true,
             message: "Comment success",
-            comment: updatePost.comments
+            comment: updatePost.comment
         })
     } catch (error) {
         return res.status(500).json({
