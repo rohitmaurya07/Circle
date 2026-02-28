@@ -1,13 +1,13 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import ProfileImage from './ProfileImage'
-import { Heart } from 'lucide-react'
+import { Heart, Send } from 'lucide-react'
 import { timeAgo } from '../lib/timeAgo';
+import { useSelector } from 'react-redux';
 
-const Comments = ({comments}) => {   
-  
+const Comments = ({comments}) => {  
   
   return (
-    <div className='p-2'>
+    <div className='p-2 pt-10 overflow-scroll h-[500px] no-scrollbar'>
 
         {comments?.map((comment) => (
           
@@ -48,6 +48,8 @@ const Comments = ({comments}) => {
             </button>
           </div>
         ))}
+
+        
 
     
     </div>

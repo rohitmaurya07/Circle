@@ -1,14 +1,16 @@
+import { Heart } from 'lucide-react'
 import React from 'react'
 
 const LikeButton = ({post}) => {
   return (
-    <div>
-        {/* Likes */}
-      <p className="px-4 font-semibold text-sm">{post?.likes?.length.toLocaleString()} likes</p>
-      <p className="px-4 py-2 text-sm">
+    <div className=' flex flex-col '>
+      <Heart className="cursor-pointer hover:scale-110 transition" />
+      {/* Likes */}
+      <p className=" font-semibold text-sm">{post?.likes?.length.toLocaleString() || "0"} likes</p>
+      {/* <p className=" text-sm">
         <span className="font-semibold mr-2">{post?.user?.username}</span>
         {post?.caption}
-      </p>
+      </p> */}
     </div>
   )
 }
