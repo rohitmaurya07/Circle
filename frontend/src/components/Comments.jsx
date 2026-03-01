@@ -7,22 +7,12 @@ import { useSelector } from 'react-redux';
 const Comments = ({comments}) => {  
   
   return (
-    <div className='p-2 pt-10 overflow-scroll h-[500px] no-scrollbar'>
-
-        {comments?.map((comment) => (
-          
+    <div className='p-2 pt-10 overflow-scroll h-[450px] no-scrollbar '>
+        {[...(comments ?? [])].reverse().map((comment) => (
           <div key={comment?.id} className="flex gap-3 group bg-gray-200 m-1 p-2 rounded-2xl">
-
-            {/* Avatar */}
-            {/* <img
-              src="https://randomuser.me/api/portraits/men/32.jpg"
-              className="w-9 h-9 rounded-full object-cover"
-            /> */}
             <ProfileImage user={comment?.user} className="w-9 h-9 ml-5 rounded-full object-cover" />
 
-            {/* COMMENT BODY */}
             <div className="flex-1">
-
               <div className="bg-white/5 px-3 py-2 rounded-2xl">
                 <p className="text-sm font-semibold">
                   {comment?.user?.username || "Unknown"}
@@ -43,14 +33,11 @@ const Comments = ({comments}) => {
             </div>
 
             {/* LIKE ICON */}
-            <button className="opacity-0 group-hover:opacity-100 transition">
-              <Heart size={16} className="text-white/70" />
+            <button className=" transition">
+              <Heart size={16} className="text-red-600 hover:fill-red-600 hover:scale-110 mr-5" />
             </button>
           </div>
         ))}
-
-        
-
     
     </div>
   )

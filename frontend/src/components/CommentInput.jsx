@@ -28,6 +28,7 @@ const CommentInput = ({ type, itemID, onCommentAdd }) => {
 
           <input
             onChange={(e) => { setaddComment(e.target.value) }}
+            onKeyPress={(e) => e.key === "Enter" && postComment()}
             value={addComment}
             type="text"
             placeholder="Add a comment..."

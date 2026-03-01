@@ -136,7 +136,7 @@ export const togglePost = async (req, res) => {
         await post.save()
         return res.status(200).json({
             success: true,
-            message: "Post Like SuccessFully",
+            message: `${index === -1 ? "Post Liked SuccessFully" : "Post Unliked SuccessFully"}`,
             likes: post.likes
         })
     } catch (error) {

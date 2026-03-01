@@ -18,7 +18,6 @@ import CreateMedia from "./CreateMedia";
 const SideBar = () => {
   const { user: currentUser } = useSelector((state) => state.user);
   const dispatch = useDispatch();
-
   const [showUploadModal, setshowUploadModal] = useState(false)
 
   const navItems = [

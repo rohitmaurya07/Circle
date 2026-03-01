@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { axiosInstance } from '../lib/axios'
 import { useDispatch, useSelector } from 'react-redux'
 import { setSavedPosts } from '../redux/slices/userSlice'
+import toast from 'react-hot-toast'
 
 
 const SavePost = ({post}) => {
@@ -17,10 +18,11 @@ const SavePost = ({post}) => {
             const res = await axiosInstance.put(`/post/${post._id}/save`)
             setIsSaved(res.data.isSaved)
             if (res.data.success) {                
+                toast.success(res?.data?.message)
                 dispatch(setSavedPosts(res?.data?.savedPosts))
             }
         } catch (error) {
-            console.log(error)
+            toast.error(error?.response?.data?.message)
         }
     }
 

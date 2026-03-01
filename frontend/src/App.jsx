@@ -1,16 +1,9 @@
-import React, { useEffect } from 'react'
-import { Button } from "@/components/ui/button"
+import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 import Login from './pages/Login'
 import Home from './pages/Home'
-import { useDispatch } from 'react-redux'
-import { getCurrentUser } from './redux/slices/userSlice'
+
 const App = () => {
-  // const dispatch = useDispatch()
-  // useEffect(() => {
-  //   dispatch(getCurrentUser())
-  // }, [dispatch])
-  
   return (
     <>
     <Routes>

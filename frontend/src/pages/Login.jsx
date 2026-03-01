@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import AuthForm from '../components/ui/AuthForm'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import {useDispatch} from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { loginUser, registerUser } from '../redux/slices/userSlice'
 
 const Login = () => {
@@ -47,12 +47,12 @@ const Login = () => {
         return Object.keys(newErrors).length === 0
     }
     const token = searchParams.get("token")
-    useEffect(()=>{
+    useEffect(() => {
         if (token) {
             setview("changePassword")
         }
-    },[token])
-    
+    }, [token])
+
     const handlerChange = (e) => {
         const { name, value } = e.target
         setformData({ ...formData, [name]: value })
@@ -61,28 +61,22 @@ const Login = () => {
     }
 
     const handleSubmit = (e) => {
-        e.preventDefault()  
-        console.log("jhgh");
-        
+        e.preventDefault()
         if (!validateForm()) return
 
-
         if (view == "register") {
-            
+
             dispatch(registerUser({
                 username: formData.username,
                 email: formData.email,
                 password: formData.password
-            },navigate))
-            console.log("register")
+            }, navigate))
         }
         else if (view == "login") {
-            console.log("View Log");
             dispatch(loginUser({
                 email: formData.email,
                 password: formData.password
-            },navigate))
-            console.log("login")
+            }, navigate))
         }
         else if (view == "forgotPassword") {
             // dispatch(({ 

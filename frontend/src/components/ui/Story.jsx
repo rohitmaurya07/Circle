@@ -1,17 +1,4 @@
-import {
-  ArrowLeft,
-  ArrowRight,
-  Eye,
-  Heart,
-  MessageCircle,
-  Pause,
-  Play,
-  PlusCircle,
-  Send,
-  Volume2,
-  VolumeOff,
-  X,
-} from "lucide-react";
+import {ArrowLeft,ArrowRight,Eye,Heart,MessageCircle,Pause,Play,PlusCircle,Send,Volume2,VolumeOff,X,} from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { axiosInstance } from "../../lib/axios";
 import { useDispatch, useSelector } from "react-redux";
@@ -29,10 +16,6 @@ const Story = () => {
   const dispatch = useDispatch()
   const { stories } = useSelector((state) => state.story)
   const { user: currentUser } = useSelector((state) => state.user);
-
-  // console.log("currentUser",currentUser);
-
-
   const videoRef = useRef(null);
   const progressIntervalRef = useRef(null);
 
@@ -45,6 +28,7 @@ const Story = () => {
   const [isMuted, setIsMuted] = useState(false);
   const [showCommentModel, setshowCommentModel] = useState(false)
   const [showStoryViewers, setshowStoryViewers] = useState(false)
+
   const currentUserStories = stories[currentUserIndex]?.stories || [];
   const currentStory = currentUserStories[currentStoryIndex];
   const currentStoryUser = stories[currentUserIndex]?.user;
@@ -71,7 +55,6 @@ const Story = () => {
 
   // Navigation
   const handleNextStory = useCallback(() => {
-    console.log("kjhg");
     if (isLastStoryOfLastUser) {
       setShowStoryModal(false);
       return;
@@ -145,9 +128,8 @@ const Story = () => {
       }, 100);
     }
 
-    // -----------------------
+    
     // VIDEO STORY
-    // -----------------------
     if (currentStory.mediaType === "video") {
       const video = videoRef.current;
       if (!video) return;
@@ -176,9 +158,7 @@ const Story = () => {
 
 
 
-  // =============================
   // VIDEO PROGRESS TRACKING
-  // =============================
   useEffect(() => {
     const video = videoRef.current;
     if (!video || currentStory?.mediaType !== "video") return;
@@ -289,16 +269,8 @@ const Story = () => {
 
           {/* USER DETAILS */}
           <div className="absolute top-6 left-4 flex items-center gap-3 z-20">
-            {/* <img
-              src={currentStoryUser?.profileImage || `https://placehold.co/600x400?text=${currentStoryUser?.username.slice(0,1).toUpperCase()}`}
-              alt={currentStoryUser?.username}
-              className="w-10 h-10 rounded-full border border-white/20 object-cover"
-            /> */}
-            <ProfileImage user={currentStoryUser} className="w-10 h-10 rounded-full border border-white/20 object-cover" />
+            <ProfileImage user={currentStoryUser} username={currentStoryUser?.username} className="w-10 h-10 rounded-full border border-white/20 object-cover" />
             <div className="flex gap-2 items-center">
-              <span className="text-white font-semibold text-sm drop-shadow-md">
-                {currentStoryUser?.username}
-              </span>
               <span className="text-white/70 text-xs font-medium drop-shadow-md">
                 {timeAgo(currentStory?.createdAt)}
               </span>
@@ -418,12 +390,6 @@ const Story = () => {
                       className="flex items-center justify-between group"
                     >
                       <div className="flex items-center gap-3">
-
-                        {/* Avatar */}
-                        {/* <img
-                src={viewer?.profileImage || `https://placehold.co/600x400?text=${viewer?.username.slice(0,1).toUpperCase()}`}
-                className="w-11 h-11 rounded-full object-cover"
-              /> */}
                         <ProfileImage user={viewer} className="w-11 h-11 rounded-full object-cover" />
                         {/* USER INFO */}
                         <div>
@@ -436,10 +402,6 @@ const Story = () => {
                         </div>
                       </div>
 
-                      {/* FOLLOW BUTTON */}
-                      <button className="text-xs px-4 py-1 rounded-full bg-white text-black font-medium hover:scale-105 transition">
-                        Follow
-                      </button>
                     </div>
                   ))}
 

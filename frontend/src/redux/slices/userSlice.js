@@ -29,8 +29,10 @@ export const userSlice = createSlice({
         const isFollowing = state.user.following.includes(targetId);
         if (isFollowing) {
             state.user.following = state.user.following.filter(id => id !== targetId);
+            toast.success(`Unfollow Success`)
         } else {
             state.user.following.push(targetId);
+            toast.success(`Follow Success`)
         }
     },
         setLoading: (state, action) => {
@@ -54,9 +56,7 @@ export const registerUser = (userData, navigate) => async (dispatch) => {
     try {
         const { data } = await axiosInstance.post('/user/register',userData)
         if (data.success) {
-            dispatch(setUser(data?.user))
-            console.log(data);
-            
+            dispatch(setUser(data?.user))            
             toast.success(data.message || "Registered SuccessFully")
             navigate("/")
         }
@@ -126,11 +126,11 @@ export const updateProfileImage = (userData) => async (dispatch) => {
         const { data } = await axiosInstance.post('/user/upload-profile', userData)
         if (data.success) {
             dispatch(setUser(data?.user))
-            toast.success(data.message || "Profile Image Upadted Success")
+            toast.success(data.message || "Profile Image Updation Success")
 
         }
     } catch (error) {
-        dispatch(setError(error?.response?.data?.message || "Profile Image Upadte Failed"))
+        dispatch(setError(error?.response?.data?.message || "Profile Image Updation Failed"))
     } finally {
         dispatch(setLoading(false))
     }
@@ -142,11 +142,11 @@ export const updateUserProfile = (userData) => async (dispatch) => {
         const { data } = await axiosInstance.post('/user/update-profile', userData)
         if (data.success) {
             dispatch(setUser(data?.user))
-            toast.success(data.message || "Profile Upadted Success")
+            toast.success(data.message || "Profile Updation Success")
 
         }
     } catch (error) {
-        dispatch(setError(error?.response?.data?.message || "Profile  Upadte Failed"))
+        dispatch(setError(error?.response?.data?.message || "Profile  Updation Failed"))
     } finally {
         dispatch(setLoading(false))
     }

@@ -93,7 +93,6 @@ const CreateMedia = ({ type = "post" }) => {
 
       if (data.success) {
         mediaType === "story" ? dispatch(getAllStories()) : ""
-        // mediaType === "story" ? dispatch(getAllStories()) : mediaType === "reel" ? dispatch(getAllReels()) : dispatch(getAllPosts())
         setfile(null)
         setpreviewUrl("")
         setCaption("")
@@ -193,7 +192,7 @@ const CreateMedia = ({ type = "post" }) => {
               <textarea id="caption" value={caption} onChange={(e)=>setCaption(e.target.value)} className='w-full p-2 rounded-xl bg-gray-800/50 border border-gray-600 text-white focus:outline-none focus:border-purple-500' />
             </div>)}
             {uploading && (
-              <div className='flex items-center gap-2 bg-red-800'>
+              <div className='flex items-center gap-2 '>
                 <div className='w-full bg-gray-800 rounded-full h-2.5'>
                   <div className='bg-purple-600 h-2.5 rounded-full' style={{width: `${progress}%`}}></div>
                 </div>

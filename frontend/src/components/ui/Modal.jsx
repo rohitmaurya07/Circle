@@ -1,15 +1,4 @@
-import { Button } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { Children } from "react"
+import { Dialog, DialogContent } from "@/components/ui/dialog"
 
 export const Modal = ({ open, onOpenChange, children, intialWidth = "sm:max-w-md", intialHeight = "sm:h-[90vh]" }) => {
   return (

@@ -2,10 +2,8 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 
-
-const ProfileImage = ({ user, username, className }) => {
+const ProfileImage = ({ user,username, className }) => {
     const { user: currentUser } = useSelector(state => state.user)
-    // console.log("user:", user);
     const isOnline = true
     return (
         <div className='flex items-center gap-3'>
@@ -14,7 +12,7 @@ const ProfileImage = ({ user, username, className }) => {
                 {isOnline && user?._id !== currentUser?._id && <span className="absolute bottom-0 right-0 block w-3 h-3 rounded-full border-2 border-white bg-green-500"></span>}
             </div>
             <Link to={`/profile/${user?._id}`}>
-                <p className='font-semibold text-sm'>{username}</p>
+                <p className='font-semibold text-sm text-content'>{username}</p>
             </Link>
         </div>
     )
