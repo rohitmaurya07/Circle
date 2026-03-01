@@ -9,12 +9,12 @@ import { Send } from 'lucide-react';
 import { axiosInstance } from '../lib/axios';
 
 const PostCard = ({ post }) => {
-  console.log(post);
   const [showCommentModel, setShowCommentModel] = useState(false)
   const { user: currentUser } = useSelector((state) => state.user);
   const [commentText, setcommentText] = useState("")
   const [userComments, setuserComments] = useState(post?.comment)
   
+// console.log(post);
 
   useEffect(() => {
     setuserComments(post?.comment)

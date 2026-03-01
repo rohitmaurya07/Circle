@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { comment, createPost, deleteById, getAllPosts, getPostById, togglePost } from "../controllers/post.controllers.js";
+import { comment, createPost, deleteById, getAllPosts, getPostById, togglePost, toggleSavedPost } from "../controllers/post.controllers.js";
 import { authMiddleware } from "../middlewares/authMiddlewares.js";
 import uploadCloudinary from "../middlewares/cloudinaryUpload.js";
 const router = Router()
@@ -12,6 +12,7 @@ router.get("/all",authMiddleware, getAllPosts)
 router.get("/:id",authMiddleware, getPostById)
 router.delete("/:id",authMiddleware, deleteById)
 router.put("/:id/like",authMiddleware,togglePost)
+router.put("/:id/save",authMiddleware,toggleSavedPost)
 router.post("/:id/comment",authMiddleware,comment)
 
 export default router

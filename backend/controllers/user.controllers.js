@@ -151,3 +151,27 @@ export const allUsers = async(req,res)=>{
         })
     }
 }
+
+
+export const getProfileById = async(req,res)=>{
+    try {
+        const userId = req.params.id
+        const user = await User.findById(userId).select("-password")
+        if (!user) {
+            return res.status(400).json({
+                success: false,
+                message: "User Not Found"
+            })
+        }
+        return res.status(200).json({
+            success: true,
+            user,
+            message: "Fetched User SuccessFully"
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Error while fetching User"
+        })
+    }
+}

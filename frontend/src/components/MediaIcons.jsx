@@ -3,6 +3,7 @@ import React from 'react'
 import LikeButton from './LikeButton';
 import Comments from './Comments';
 import { Modal } from './ui/Modal';
+import SavePost from './SavePost';
 
 const MediaIcons = ({post,showCommentModel,setShowCommentModel}) => {
   return (
@@ -13,7 +14,7 @@ const MediaIcons = ({post,showCommentModel,setShowCommentModel}) => {
           <MessageCircle onClick={()=>setShowCommentModel(true)} className="cursor-pointer hover:scale-110 transition" />
           <Send className="cursor-pointer hover:scale-110 transition" />
         </div>
-        <Bookmark className="cursor-pointer hover:scale-110 transition" />
+        <SavePost post={post} />
       </div>
 
 

@@ -1,5 +1,5 @@
 import {Router} from "express"
-import { allUsers, loginUser, logoutUser, profileUser, registerUser, uploadProfile } from "../controllers/user.controllers.js";
+import { allUsers, getProfileById, loginUser, logoutUser, profileUser, registerUser, uploadProfile } from "../controllers/user.controllers.js";
 import { authMiddleware } from "../middlewares/authMiddlewares.js";
 import uploadCloudinary from "../middlewares/cloudinaryUpload.js";
 
@@ -9,6 +9,7 @@ router.post("/register",registerUser)
 router.post("/login",loginUser)
 router.get("/logout",logoutUser)
 router.get("/profile",authMiddleware, profileUser)
+router.get("/profile/:id",authMiddleware, getProfileById)
 router.post("/upload-profile",authMiddleware,
     uploadCloudinary.single("profileImage"), uploadProfile)
 router.get("/all",allUsers)

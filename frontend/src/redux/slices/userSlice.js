@@ -17,6 +17,11 @@ export const userSlice = createSlice({
             state.user = action.payload
             state.isAuthenticated = !!action.payload
         },
+        setSavedPosts: (state, action) => {
+            if (state.user) {
+                state.user.savedPosts = action.payload
+            }
+        },
         setLoading: (state, action) => {
             state.loading = action.payload
         },
@@ -28,7 +33,7 @@ export const userSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { setUser, setLoading, setError } = userSlice.actions
+export const { setUser, setLoading,setSavedPosts, setError } = userSlice.actions
 
 export default userSlice.reducer
 
@@ -56,8 +61,6 @@ export const registerUser = (userData, navigate) => async (dispatch) => {
 export const loginUser = (userData, navigate) => async (dispatch) => {
     dispatch(setLoading(true))
     try {
-        console.log("Start Logging");
-        
         const { data } = await axiosInstance.post('/user/login', userData)
         if (data.success) {
             dispatch(setUser(data?.user))
@@ -76,9 +79,7 @@ export const loginUser = (userData, navigate) => async (dispatch) => {
 export const getCurrentUser = (userData, navigate) => async (dispatch) => {
     dispatch(setLoading(true))
     try {
-        const { data } = await axiosInstance.get('/user/profile')
-        console.log(data);
-        
+        const { data } = await axiosInstance.get('/user/profile')        
         if (data.success) {
             dispatch(setUser(data?.user))
         }

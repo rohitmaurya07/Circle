@@ -137,7 +137,7 @@ export const togglePost = async (req, res) => {
         return res.status(200).json({
             success: true,
             message: "Post Like SuccessFully",
-            post: post.likes
+            likes: post.likes
         })
     } catch (error) {
         return res.status(500).json({
@@ -185,6 +185,47 @@ export const comment = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: "Error While Commenting on Post"
+        })
+    }
+}
+
+// Save Post
+export const toggleSavedPost = async (req, res) => {
+    try {
+        const userId = req.user._id
+        const post = await Post.findById(req.params.id)
+        const user = await User.findById(userId)
+        if (!user) {
+            return res.status(500).json({
+                success: false,
+                message: "User Not found"
+            })
+        }
+        if (!post) {
+            return res.status(500).json({
+                success: false,
+                message: "Post Not found"
+            })
+        }
+        const postId = post._id
+        const index = user.savedPosts.indexOf(postId)
+        if (index === -1) {
+            user.savedPosts.push(postId)
+        } else {
+            user.savedPosts.splice(index, 1)
+        }
+
+        await user.save()
+        return res.status(200).json({
+            success: true,
+            isSaved: index === -1,
+            message: `${index === -1 ? "Post Saved SuccessFully" : "Post Unsaved SuccessFully"}`,
+            savedPosts: user.savedPosts
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Error While Saving Post"
         })
     }
 }
