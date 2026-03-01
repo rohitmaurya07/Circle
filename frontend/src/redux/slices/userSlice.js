@@ -22,6 +22,17 @@ export const userSlice = createSlice({
                 state.user.savedPosts = action.payload
             }
         },
+       
+    toggleFollowing: (state, action) => {
+        if (!state.user) return;
+        const targetId = action.payload;
+        const isFollowing = state.user.following.includes(targetId);
+        if (isFollowing) {
+            state.user.following = state.user.following.filter(id => id !== targetId);
+        } else {
+            state.user.following.push(targetId);
+        }
+    },
         setLoading: (state, action) => {
             state.loading = action.payload
         },
@@ -33,7 +44,7 @@ export const userSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { setUser, setLoading,setSavedPosts, setError } = userSlice.actions
+export const { setUser, setLoading,setSavedPosts, setError,toggleFollowing } = userSlice.actions
 
 export default userSlice.reducer
 

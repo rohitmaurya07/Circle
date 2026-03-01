@@ -175,3 +175,45 @@ export const getProfileById = async(req,res)=>{
         })
     }
 }
+
+export const followUser = async(req,res)=>{
+    try {
+        const userId = req.params.id
+        const user = await User.findById(userId)
+        const currentUser = await User.findById(req.user._id)
+        if (!user) {
+            return res.status(400).json({
+                success: false,
+                message: "User Not Found"
+            })
+        }
+
+        if(user.followers.includes(req.user._id)){
+            user.followers.pull(req.user._id)
+            currentUser.following.pull(userId)
+            await user.save()
+            await currentUser.save()
+            return res.status(200).json({
+                success: true,
+                user,
+                message: "Unfollowed User SuccessFully"
+            })
+        }
+
+        user.followers.push(req.user._id)
+        currentUser.following.push(userId)
+        await user.save()
+        await currentUser.save()
+
+        return res.status(200).json({
+            success: true,
+            user,
+            message: "Followed User SuccessFully"
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Error while following User"
+        })
+    }
+}
