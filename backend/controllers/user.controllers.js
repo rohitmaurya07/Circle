@@ -217,3 +217,22 @@ export const followUser = async(req,res)=>{
         })
     }
 }
+
+export const getSuggestUsers = async(req,res)=>{
+    try {
+        const currentUser = req.user._id
+        const users = await User.find({
+            _id: {$ne: currentUser, $nin: currentUser.following},
+        }).select("username profileImage").limit(10)
+
+        res.status(200).json({
+        success: true,
+        users
+    })
+    } catch (error) {
+            return res.status(500).json({
+            success: false,
+            message: "Something Wrong with Suggested users"
+        })
+    }
+}

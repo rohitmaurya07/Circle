@@ -45,7 +45,7 @@ const PostCard = ({ post }) => {
             <ProfileImage user={post?.user} className="w-9 h-9 rounded-full object-cover" />
             <p>{post?.user?.username}</p>
           </div>
-          <FollowButton post={post} />
+          <FollowButton user={post?.user} />
         </div>
 
         {/* Media */}

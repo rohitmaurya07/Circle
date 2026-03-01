@@ -4,6 +4,7 @@ import Story from '../components/ui/Story'
 import Feed from '../components/Feed'
 import { useDispatch } from 'react-redux'
 import { getCurrentUser } from '../redux/slices/userSlice'
+import SuggestedUsers from '../components/SuggestedUsers'
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -19,6 +20,7 @@ const Home = () => {
       <Story/>
       <Feed/>
       </div>
+      <SuggestedUsers/>
     </div>
   )
 }
