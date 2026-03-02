@@ -17,6 +17,9 @@ export const userSlice = createSlice({
             state.user = action.payload
             state.isAuthenticated = !!action.payload
         },
+        setUserProfile: (state, action) => {
+            state.userProfile = action.payload
+        },
         setSavedPosts: (state, action) => {
             if (state.user) {
                 state.user.savedPosts = action.payload
@@ -46,7 +49,7 @@ export const userSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { setUser, setLoading,setSavedPosts, setError,toggleFollowing } = userSlice.actions
+export const { setUser, setLoading,setSavedPosts, setError,toggleFollowing, setUserProfile } = userSlice.actions
 
 export default userSlice.reducer
 
@@ -147,6 +150,22 @@ export const updateUserProfile = (userData) => async (dispatch) => {
         }
     } catch (error) {
         dispatch(setError(error?.response?.data?.message || "Profile  Updation Failed"))
+    } finally {
+        dispatch(setLoading(false))
+    }
+}
+
+// Get Profile By Id
+export const getUserProfileById = (id) => async (dispatch) => {
+    dispatch(setLoading(true))
+    try {
+        const { data } = await axiosInstance.get(`/user/profile/${id}`)
+        if (data.success) {
+            console.log("User Profile",data?.user);
+            dispatch(setUserProfile(data?.user))
+        }
+    } catch (error) {
+        dispatch(setError(error?.response?.data?.message || "Profile Get Failed"))
     } finally {
         dispatch(setLoading(false))
     }

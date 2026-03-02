@@ -8,7 +8,7 @@ import SavePost from './SavePost';
 const MediaIcons = ({post,showCommentModel,setShowCommentModel}) => {
   return (
     <div>
-        <div className="flex justify-between items-center px-4 py-3">
+        <div className="flex justify-between items-center px-4 py-3 text-content">
         <div className="flex gap-4">
           <LikeButton post={post} />
           <MessageCircle onClick={()=>setShowCommentModel(true)} className="cursor-pointer hover:scale-110 transition" />

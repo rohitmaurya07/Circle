@@ -1,6 +1,7 @@
 import User from "../models/user.model.js"
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
+import Post from "../models/post.model.js"
 
 export const registerUser = async(req,res)=>{
     const {username, email, password} = req.body
@@ -154,9 +155,13 @@ export const allUsers = async(req,res)=>{
 
 
 export const getProfileById = async(req,res)=>{
+    console.log("Profile Id",req.params.id);
+    
     try {
         const userId = req.params.id
-        const user = await User.findById(userId).select("-password")
+        console.log("User Id",userId);
+        
+        const user = await User.findById(userId).select("username followers following posts reel story profileImage isVerified")
         if (!user) {
             return res.status(400).json({
                 success: false,
@@ -233,6 +238,40 @@ export const getSuggestUsers = async(req,res)=>{
             return res.status(500).json({
             success: false,
             message: "Something Wrong with Suggested users"
+        })
+    }
+}
+
+// Get all user posts
+export const getUserPosts = async(req,res)=>{
+    try {
+        const userId = req.params.id
+        const posts = await Post.find({user: userId}).populate("user","username profileImage")
+        res.status(200).json({
+            success: true,
+            posts
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Error while fetching user posts"
+        })
+    }
+}
+
+// Get all user saved posts
+export const getUserSavedPosts = async(req,res)=>{
+    try {
+        const userId = req.params.id
+        const posts = await User.findById(userId).select("savedPosts")
+        res.status(200).json({
+            success: true,
+            posts
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Error while fetching user saved posts"
         })
     }
 }

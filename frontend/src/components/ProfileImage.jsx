@@ -2,9 +2,8 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 
-const ProfileImage = ({ user,username, className }) => {
+const ProfileImage = ({ user,username, className,isOnline }) => {
     const { user: currentUser } = useSelector(state => state.user)
-    const isOnline = true
     return (
         <div className='flex items-center gap-3'>
             <div className={`${className ? className : 'w-8 h-8'} relative rounded-full bg-linear-to-tr from-yellow-400 via-pink-500 to-purple-500`}>
