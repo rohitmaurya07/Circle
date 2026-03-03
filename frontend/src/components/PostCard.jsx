@@ -71,6 +71,7 @@ const PostCard = ({ post , place }) => {
             className="w-full h-full object-cover"
           />
         )}
+
       </div>
 
       {/* Icons */}
@@ -82,6 +83,8 @@ const PostCard = ({ post , place }) => {
         />
       </div>
     </div>
+
+    <p>{post?.caption}</p>
 
     {/* Comment Modal */}
     {showCommentModel && (

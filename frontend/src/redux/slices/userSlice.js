@@ -6,7 +6,8 @@ const initialState = {
     user: null,
     loading: false,
     error: null,
-    isAuthenticated: false
+    isAuthenticated: false,
+    savedPosts: []
 }
 
 export const userSlice = createSlice({
@@ -21,9 +22,7 @@ export const userSlice = createSlice({
             state.userProfile = action.payload
         },
         setSavedPosts: (state, action) => {
-            if (state.user) {
-                state.user.savedPosts = action.payload
-            }
+            state.savedPosts = action.payload
         },
        
     toggleFollowing: (state, action) => {
@@ -166,6 +165,22 @@ export const getUserProfileById = (id) => async (dispatch) => {
         }
     } catch (error) {
         dispatch(setError(error?.response?.data?.message || "Profile Get Failed"))
+    } finally {
+        dispatch(setLoading(false))
+    }
+}
+
+
+// Get User Saved Posts
+export const getUserSavedPosts = (id) => async (dispatch) => {
+    dispatch(setLoading(true))
+    try {
+        const { data } = await axiosInstance.get(`/user/saved-posts/${id}`)
+        if (data.success) {
+            dispatch(setSavedPosts(data?.posts))
+        }
+    } catch (error) {
+        dispatch(setError(error?.response?.data?.message || "Saved Posts Get Failed"))
     } finally {
         dispatch(setLoading(false))
     }

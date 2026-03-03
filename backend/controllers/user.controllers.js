@@ -259,14 +259,20 @@ export const getUserPosts = async(req,res)=>{
     }
 }
 
-// Get all user saved posts
+// Get user saved posts
 export const getUserSavedPosts = async(req,res)=>{
     try {
         const userId = req.params.id
-        const posts = await User.findById(userId).select("savedPosts")
+        const user = await User.findById(userId)
+        const savedPosts = user.savedPosts
+        
+        
+        const posts = await Post.find({ _id: { $in: savedPosts } })
+        
         res.status(200).json({
             success: true,
-            posts
+            posts,
+            message: "Fetched User Saved Posts SuccessFully"
         })
     } catch (error) {
         return res.status(500).json({

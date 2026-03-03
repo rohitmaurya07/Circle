@@ -46,6 +46,7 @@ const Story = () => {
 
   const canGoPrevious = currentUserIndex > 0 || currentStoryIndex > 0;
   const canGoNext = !isLastStoryOfLastUser;
+  console.log("Cuurent User :", currentUser);
 
 
   useEffect(() => {
@@ -201,18 +202,23 @@ const Story = () => {
   return (
     <div className="flex gap-4">
       {/* CREATE STORY */}
-      <div>
-        <div className="bg-content h-15 w-15 rounded-full border-4 border-base relative">
-          <Modal open={isCreateStoryModal} onOpenChange={setIsCreateStoryModal}>
-            <CreateMedia type="story" />
-          </Modal>
-          <PlusCircle
-            onClick={() => setIsCreateStoryModal(true)}
-            className="text-surface absolute bottom-0 right-0 bg-content rounded-full cursor-pointer"
-          />
-        </div>
-        <span className="text-content text-sm">Create Story</span>
-      </div>
+<div>
+  <div className={`bg-content h-15 w-15 rounded-full border-4 border-base relative ${currentUser?.story.length > 0 ? "border-base" : "border-none"}`}>
+    <img
+      src={currentUser?.profileImage || "/default-avatar.png"}
+      alt="Profile"
+      className="w-full h-full rounded-full object-cover"
+    />
+    <Modal open={isCreateStoryModal} onOpenChange={setIsCreateStoryModal}>
+      <CreateMedia type="story" />
+    </Modal>
+    <PlusCircle
+      onClick={() => setIsCreateStoryModal(true)}
+      className="text-surface absolute bottom-0 right-0 bg-content rounded-full cursor-pointer"
+    />
+  </div>
+  <span className="text-content text-sm">Create Story</span>
+</div>
 
       {/* USERS LIST */}
       <div className="flex space-x-4 overflow-x-auto no-scrollbar">

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { getUserProfileById } from "../redux/slices/userSlice";
+import { getUserProfileById, getUserSavedPosts } from "../redux/slices/userSlice";
 import { getUserPosts } from "../redux/slices/postSlice";
 import SideBar from "../components/ui/SideBar";
 import ProfileImage from "../components/ProfileImage";
@@ -16,11 +16,12 @@ const Profile = () => {
     (state) => state.user
   );
 
-  console.log(currentUser);
   
 
   // ⚠️ make sure your store reducer name is "posts"
   const { userPosts } = useSelector((state) => state.posts);
+
+  const { savedPosts } = useSelector((state)=>state.user)
 
   // active tab state
   const [activeTab, setActiveTab] = useState("posts");
@@ -31,6 +32,8 @@ const Profile = () => {
   useEffect(() => {
     dispatch(getUserProfileById(id));
     dispatch(getUserPosts(id));
+    dispatch(getUserSavedPosts(id));
+    // console.log("userSavedPosts",userSavedPosts);
   }, [dispatch, id]);
 
   return (
@@ -176,10 +179,10 @@ const Profile = () => {
 
           {/* SAVED */}
           {activeTab === "saved" && (
-            <p className="col-span-3 text-center text-gray-500 mt-10">
-              {currentUser?.savedPosts?.length > 0 ? (
-                currentUser?.savedPosts?.map((post) => (
-                    <li>{post}</li>
+            <p className="col-span-3 text-center text-gray-500 grid grid-cols-2 sm:grid-cols-3 gap-1 mt-10">
+              {savedPosts?.length > 0 ? (
+                savedPosts?.map((post) => (
+                    <PostCard key={post._id} post={post} place="profile" />
                 ))
               ) : (
                 <p>No Saved Posts</p>
