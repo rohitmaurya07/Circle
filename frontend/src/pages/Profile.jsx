@@ -7,6 +7,7 @@ import SideBar from "../components/ui/SideBar";
 import ProfileImage from "../components/ProfileImage";
 import PostCard from "../components/PostCard";
 import { Grid3X3, Clapperboard, Bookmark } from "lucide-react";
+import {Link} from "react-router-dom"
 
 const Profile = () => {
   const { id } = useParams();
@@ -16,6 +17,7 @@ const Profile = () => {
     (state) => state.user
   );
 
+  // console.log("userProfile",userProfile);
   
 
   // ⚠️ make sure your store reducer name is "posts"
@@ -69,9 +71,9 @@ const Profile = () => {
               )}
 
               {isMyProfile ? (
-                <button className="bg-blue-500 px-5 py-1 rounded-md font-medium">
+                <Link to="/edit-profile" className="bg-blue-500 px-5 py-1 rounded-md font-medium">
                   Edit Profile
-                </button>
+                </Link>
               ) : (
                 <button className="bg-blue-500 px-5 py-1 rounded-md font-medium">
                   Follow
@@ -107,8 +109,17 @@ const Profile = () => {
 
             {/* Bio */}
             <div>
-              <p className="font-semibold">{userProfile?.username}</p>
-              <p className="text-gray-400">{userProfile?.bio}</p>
+              <p className="font-semibold">{userProfile?.name}</p>
+              <p className="text-gray-400">{userProfile?.role}</p>
+              <div className="py-4">
+                <p className="text-gray-400">{userProfile?.bio}</p>
+              </div>
+              <p className="text-gray-400">{userProfile?.location}</p>
+              {userProfile?.website && (<div className="">
+                <p>Website</p>
+                <p className="text-gray-400">{userProfile?.website}</p>
+              </div>)}
+              
             </div>
           </div>
         </div>

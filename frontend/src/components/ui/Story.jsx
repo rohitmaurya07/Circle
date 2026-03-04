@@ -46,7 +46,6 @@ const Story = () => {
 
   const canGoPrevious = currentUserIndex > 0 || currentStoryIndex > 0;
   const canGoNext = !isLastStoryOfLastUser;
-  console.log("Cuurent User :", currentUser);
 
 
   useEffect(() => {

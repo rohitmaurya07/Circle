@@ -161,7 +161,7 @@ export const getProfileById = async(req,res)=>{
         const userId = req.params.id
         console.log("User Id",userId);
         
-        const user = await User.findById(userId).select("username followers following posts reel story profileImage isVerified")
+        const user = await User.findById(userId).select("-password")
         if (!user) {
             return res.status(400).json({
                 success: false,
@@ -278,6 +278,25 @@ export const getUserSavedPosts = async(req,res)=>{
         return res.status(500).json({
             success: false,
             message: "Error while fetching user saved posts"
+        })
+    }
+}
+
+// Update User Profile Details
+export const updateProfile = async(req,res)=>{
+    try {
+        const userId = req.user._id
+        const {name,email,username,bio,location,website,role} = req.body
+        const user = await User.findByIdAndUpdate(userId,{$set: {name,email,username,bio,location,website,role}},{new: true}).select("-password")
+        res.status(200).json({
+            success: true,
+            user,
+            message: "Profile Updated SuccessFully"
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Error while updating profile"
         })
     }
 }

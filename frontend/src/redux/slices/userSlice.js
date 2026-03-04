@@ -158,9 +158,8 @@ export const updateUserProfile = (userData) => async (dispatch) => {
 export const getUserProfileById = (id) => async (dispatch) => {
     dispatch(setLoading(true))
     try {
-        const { data } = await axiosInstance.get(`/user/profile/${id}`)
+        const { data } = await axiosInstance.get(`/user/profile/${id}`)        
         if (data.success) {
-            console.log("User Profile",data?.user);
             dispatch(setUserProfile(data?.user))
         }
     } catch (error) {
