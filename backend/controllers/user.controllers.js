@@ -286,8 +286,8 @@ export const getUserSavedPosts = async(req,res)=>{
 export const updateProfile = async(req,res)=>{
     try {
         const userId = req.user._id
-        const {name,email,username,bio,location,website,role} = req.body
-        const user = await User.findByIdAndUpdate(userId,{$set: {name,email,username,bio,location,website,role}},{new: true}).select("-password")
+        const {name,email,username,bio,location,website,role,phone} = req.body
+        const user = await User.findByIdAndUpdate(userId,{$set: {name,email,username,bio,location,website,role,phone}},{new: true}).select("-password")
         res.status(200).json({
             success: true,
             user,

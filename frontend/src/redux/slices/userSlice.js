@@ -111,7 +111,7 @@ export const logoutUser = (navigate) => async (dispatch) => {
         if (data.success) {
             dispatch(setUser(null))
             toast.success(data.message || "Logut Success")
-            navigate("/")
+            navigate("/login")
 
         }
     } catch (error) {

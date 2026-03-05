@@ -34,6 +34,7 @@ const EditProfile = () => {
   const [form, setForm] = useState({
     name: "",
     email: "",
+    phone: "",
     username: "",
     bio: "",
     location: "",
@@ -46,6 +47,7 @@ const EditProfile = () => {
       setForm({
         name: currentUser?.name || "",
         email: currentUser?.email || "",
+        phone: currentUser?.phone || "",
         username: currentUser?.username || "",
         bio: currentUser?.bio || "",
         location: currentUser?.location || "",
@@ -58,19 +60,21 @@ const EditProfile = () => {
 
   const saveData = async () => {
     try {
-      console.log(form)
       const data = await axiosInstance.put('/user/update-profile', form)
-      console.log(data)
-      toast.success("Profile Updated Successfully")
+      if(data.status === 200){
+        toast.success("Profile Updated Successfully")
+      }
     } catch (error) {
-      console.log(error)
+      toast.error(error.response.data.message)
     }
   }
 
   const handleSave = async () => {
+    setIsLoading(true)
     await saveData()
     setSaved(true)
     setTimeout(() => setSaved(false), 2000)
+    setIsLoading(false)
   }
 
   const handleImageUpload = async (e) => {
@@ -167,6 +171,7 @@ const EditProfile = () => {
               <Field label="Username" name="username" half placeholder="johndoe" form={form} setForm={setForm} />
               <Field label="Role / Title" name="role" half placeholder="e.g. Designer" form={form} setForm={setForm} />
               <Field label="Email Address" name="email" type="email" half placeholder="john@example.com" form={form} setForm={setForm} />
+              <Field label="Phone Number" name="phone" type="number" half placeholder="1234567890" form={form} setForm={setForm} />
               <Field label="Location" name="location" placeholder="City, Country" form={form} setForm={setForm} />
             </div>
           </div>

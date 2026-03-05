@@ -109,8 +109,10 @@ const Profile = () => {
 
             {/* Bio */}
             <div>
-              <p className="font-semibold">{userProfile?.name}</p>
-              <p className="text-gray-400">{userProfile?.role}</p>
+              <div className="flex items-center gap-2">
+                <p className="font-semibold">{userProfile?.name}</p>
+              <p className="text-gray-400 text-sm">{userProfile?.role}</p>
+              </div>
               <div className="py-4">
                 <p className="text-gray-400">{userProfile?.bio}</p>
               </div>

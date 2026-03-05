@@ -229,3 +229,24 @@ export const toggleSavedPost = async (req, res) => {
         })
     }
 }
+
+// Get Posts from Explore Page
+export const getExplorePosts = async (req, res) => {
+    try {
+        const posts = await Post.find({user:{$ne:req.user._id}})
+            .populate("user", "username profileImage")
+            .populate("comment.user", "username profileImage")
+            .sort({ "likes": -1, createdAt: -1 })
+            .limit(10)
+        return res.status(200).json({
+            success: true,
+            posts,
+            message: "Fetched All Posts For Explore SuccessFully"
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Error while fetching all Posts"
+        })
+    }
+}

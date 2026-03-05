@@ -31,6 +31,7 @@ const userSchema = new Schema({
     },
     phone: {
         type: Number,
+        required: false,
     },
     profileImage: {
         type: String

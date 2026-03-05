@@ -7,7 +7,8 @@ const initialState = {
     loading: false,
     error: null,
     isAuthenticated: false,
-    userPosts: []
+    userPosts: [],
+    explorePosts: []
 }
 
 export const postSlice = createSlice({
@@ -25,13 +26,16 @@ export const postSlice = createSlice({
         },
         setUserPosts: (state, action) => {
             state.userPosts = action.payload
+        },
+        setExplorePosts: (state, action) => {
+            state.explorePosts = action.payload
         }
 
     },
 })
 
 // Action creators are generated for each case reducer function
-export const { setPosts, setLoading, setError,setUserPosts } = postSlice.actions
+export const { setPosts, setLoading, setError,setUserPosts,setExplorePosts } = postSlice.actions
 
 export default postSlice.reducer
 
@@ -76,6 +80,23 @@ export const getUserSavedPosts = (userId) => async (dispatch) => {
         }
     } catch (error) {
         dispatch(setError(error?.response?.data?.message || "Saved Posts Get Failed"))
+    } finally {
+        dispatch(setLoading(false))
+    }
+}
+
+// Get Explore Posts
+export const getExplorePosts = () => async (dispatch) => {
+    dispatch(setLoading(true))
+    try {
+        const { data } = await axiosInstance.get('/post/explore')
+        console.log(data);
+        
+        if (data.success) {
+            dispatch(setExplorePosts(data?.posts))
+        }
+    } catch (error) {
+        dispatch(setError(error?.response?.data?.message || "Posts Get Failed"))
     } finally {
         dispatch(setLoading(false))
     }
