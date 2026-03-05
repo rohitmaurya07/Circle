@@ -16,8 +16,6 @@ const Profile = () => {
   const { userProfile, user: currentUser } = useSelector(
     (state) => state.user
   );
-
-  // console.log("userProfile",userProfile);
   
 
   // ⚠️ make sure your store reducer name is "posts"

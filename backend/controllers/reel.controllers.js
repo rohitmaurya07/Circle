@@ -1,11 +1,12 @@
 import Reel from "../models/reel.model.js";
-
+import User from "../models/user.model.js";
 // Creating Reel
 export const createReel = async (req,res)=>{
     try {
         const {caption} = req.body;
         const userId = req.user._id;
-        if (!req.file || !req.file.path ) {
+        const user = await User.findById(userId);
+        if (!req.file || !req.file.path ) {            
             return res.status(400).json({
                 success: false,
                 message: "Reel Not Uploaded"
@@ -18,6 +19,9 @@ export const createReel = async (req,res)=>{
             mediaUrl,
             caption
         })
+
+        user.reel.push(reel._id);
+        await user.save();
     
         return res.status(201).json({
             success: true,

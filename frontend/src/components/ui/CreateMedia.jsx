@@ -13,7 +13,7 @@ const CreateMedia = ({ type = "post" }) => {
   const [previewUrl, setpreviewUrl] = useState('')
   const [uploading, setuploading] = useState(false)
   const [progress, setprogress] = useState(0)
-  const [error, setError] = useState("")
+  const [error, setError] = useState("")  
   const [isDragging, setIsDragging] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
   const [isMuted, setIsMuted] = useState(false)

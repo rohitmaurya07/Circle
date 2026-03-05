@@ -140,7 +140,7 @@ const Explore = () => {
         }
       `}</style>
 
-      <div className="flex min-h-screen ">
+      <div className="flex min-h-screen bg-black text-white">
         <SideBar />
 
         <main className="flex-1 overflow-y-auto explore-main">

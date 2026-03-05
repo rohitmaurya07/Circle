@@ -7,6 +7,7 @@ import Explore from './pages/Explore'
 import EditProfile from './components/EditProfile'
 import { useDispatch, useSelector } from 'react-redux'
 import { getCurrentUser } from './redux/slices/userSlice'
+import Reels from './pages/Reels'
 
 const App = () => {
   const dispatch = useDispatch();
@@ -24,6 +25,7 @@ const App = () => {
       <Route path='/login' element={<Login/>} />
       <Route path='/profile/:id' element={<Profile/>} />
       <Route path='/explore' element={<Explore/>} />
+      <Route path='/reels' element={<Reels/>} />
       <Route path='/edit-profile' element={<EditProfile/>} />
     </Routes>
     

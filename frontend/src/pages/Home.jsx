@@ -7,7 +7,7 @@ import SuggestedUsers from '../components/SuggestedUsers'
 const Home = () => {
   
   return (
-    <div className='flex'>
+    <div className='flex bg-black text-white'>
       <SideBar/>
       <div className='p-4'>
       <Story/>
